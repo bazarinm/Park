@@ -21,7 +21,8 @@ void Park::Simulation() {
 	Draw();
 
 	while (!creatures.empty()) {
-		Creature* current_creature = creatures.front();
+		Creature* current_creature = creatures.front(); creatures.pop();
+
 		current_creature->Behave(this);
 
 		std::vector<Creature*> offsprings = current_creature->GetOffs();
@@ -30,21 +31,27 @@ void Park::Simulation() {
 			field[c_pos.x][c_pos.y] = creature->GetType();
 			creatures.push(creature);
 		}
-
+		creatures.push(current_creature);
 		Draw();
 	}
 
 }
 
 std::vector<std::vector<Creatures>> Park::GetSight(Coords pos, int FOV) const {
-	std::vector<std::vector<Creatures>> sight(FOV * 2 + 1, std::vector<Creatures>(FOV * 2 + 1));
+	std::vector<std::vector<Creatures>> sight(FOV * 2 + 1, std::vector<Creatures>(FOV * 2 + 1, BARRIER));
 
 	size_t k = 0, l = 0;
 	for (int i = (-1)*FOV; i < FOV + 1; ++i) {
+		if (pos.x + i > HEIGHT - 1 || pos.x + i < 0) {
+			l = 0;
+			++k;
+			continue;
+		}
 		for (int j = (-1)*FOV; j < FOV + 1; ++j) {
-			if (pos.x > HEIGHT - i || pos.y > WIDTH - j
-				|| pos.x  < (-1)*i || pos.y < (-1)*j)
-				sight[k][l] = Creatures::BARRIER;
+			if (pos.y + j > WIDTH - 1|| pos.y + j < 0) {
+				++l;
+				continue;
+			}
 			else
 				sight[k][l] = field[pos.x + i][pos.y + j];
 			++l;

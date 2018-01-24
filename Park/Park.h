@@ -10,8 +10,8 @@
 #include <queue>
 #include <array>
 
-const size_t WIDTH = 10;
-const size_t HEIGHT = 10;
+const int WIDTH = 10;
+const int HEIGHT = 10;
 using Field = std::array<std::array<Creatures, WIDTH>, HEIGHT>;
 
 class Park
