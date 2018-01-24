@@ -6,7 +6,7 @@ class Plant :
 	public Creature
 {
 public:
-	Plant();
+	Plant(unsigned nutr, Coords pos);
 
 private:
 	virtual void Photosynthesis() = 0;

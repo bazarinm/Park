@@ -2,7 +2,7 @@
 
 
 
-Fox::Fox()
+Fox::Fox(unsigned nutr, Coords pos) : Animal(nutr, pos)
 {
 }
 

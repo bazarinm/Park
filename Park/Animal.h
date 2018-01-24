@@ -2,11 +2,12 @@
 #define ANIMAL_H
 
 #include "Creature.h"
+
 class Animal :
 	public Creature
 {
 public:
-	Animal();
+	Animal(unsigned nutr, Coords pos);
 
 private:
 	virtual void Eat() = 0;

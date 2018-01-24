@@ -6,7 +6,7 @@ class Rabbit :
 	public Animal
 {
 public:
-	Rabbit();
+	Rabbit(unsigned nutr, Coords pos);
 	~Rabbit();
 
 	//void Behave() override;

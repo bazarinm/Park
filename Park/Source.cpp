@@ -1,4 +1,6 @@
+#include "Park.h"
 
 int main() {
-	return 0;
+	Park mypark;
+	mypark.Simulation();
 }

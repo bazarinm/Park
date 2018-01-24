@@ -3,22 +3,27 @@
 
 #include "Utility.h"
 
-struct Coords { size_t x; size_t y; };
+#include <vector>
+
+class Park;
 
 class Creature
 {
 public:
-	Creature();
+	Creature(unsigned nutr, Coords pos);
 
 	virtual void Behave(const Park*) = 0;
-
+	Coords GetPos() const;
+	std::vector<Creature*> GetOffs() const;
+	Creatures GetType() const;
 protected:
-	unsigned int nutrients;
-	Coords coords;
-
+	static const Creatures type;
+	unsigned int nutr;
+	Coords pos;
+	std::vector<Creature*> offsprings;
 private:
 	
-	virtual Creature* Procreate() = 0;
+	virtual void Procreate() = 0;
 };
 
 #endif

@@ -2,7 +2,7 @@
 
 
 
-Rabbit::Rabbit()
+Rabbit::Rabbit(unsigned nutr, Coords pos) : Animal(nutr, pos)
 {
 }
 

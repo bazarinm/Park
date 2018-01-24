@@ -2,7 +2,7 @@
 
 
 
-Plant::Plant()
+Plant::Plant(unsigned nutr, Coords pos): Creature(nutr, pos)
 {
 }
 
