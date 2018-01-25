@@ -2,9 +2,9 @@
 
 
 
-Grass::Grass(Coords pos) : Plant(5, pos)
+Grass::Grass(Coords pos) : Plant(6, pos)
 {
-	
+	type = GRASS;
 }
 
 Grass::~Grass()
@@ -12,8 +12,6 @@ Grass::~Grass()
 }
 
 int Grass::FOV = 1;
-const Creatures Grass::type = GRASS;
-
 
 void Grass::Procreate() {
 	for (int i = -1; i < 2; ++i)
@@ -21,7 +19,7 @@ void Grass::Procreate() {
 			if (Sight[FOV + i][FOV + j] == Creatures::DIRT) {
 				Grass* offspring = new Grass({ pos.x + i, pos.y + j });
 				offsprings.push_back(offspring);
-				nutr -= 2;
+				nutr -= 3;
 				return;
 			}
 }
@@ -30,12 +28,16 @@ void Grass::Photosynthesis() {
 	++nutr;
 }
 
+void Grass::Death() {
+	is_dead = true;
+}
+
 void Grass::Behave(const Park* park) {
 	offsprings.clear();
 	Sight = park->GetSight(pos, FOV);
 
-	if (nutr >= 2)
+	if (nutr != 0)
 		Procreate();
 	else
-		Photosynthesis();
+		Death();
 }

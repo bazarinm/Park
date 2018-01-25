@@ -2,7 +2,7 @@
 
 
 
-Creature::Creature(unsigned _nutr, Coords _pos): nutr(_nutr), pos(_pos)
+Creature::Creature(unsigned _nutr, Coords _pos): nutr(_nutr), pos(_pos), is_dead(false)
 {
 }
 
@@ -17,6 +17,10 @@ Coords Creature::GetPos() const {
 
 Creatures Creature::GetType() const {
 	return type;
+}
+
+bool Creature::GetStatus() const {
+	return is_dead;
 }
 
 std::vector<Creature*> Creature::GetOffs() const {
