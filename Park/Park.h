@@ -27,6 +27,8 @@ public:
 private:
 	Field field;
 	std::queue<Creature*> creatures;
+
+	void Add(Creature*);
 };
 
 #endif

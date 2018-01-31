@@ -36,18 +36,18 @@ void Park::Simulation() {
 		for (size_t i = 0; i < length; ++i) {
 			Creature* current_creature = creatures.front(); creatures.pop();
 
-			current_creature->Behave(this);
-			std::vector<Creature*> offsprings = current_creature->GetOffs();
-			for (Creature* creature : offsprings) {
-				Add(creature);
-			}
-			if (!current_creature->GetStatus()) //dead
-				creatures.push(current_creature);
-			else
-				Remove(current_creature);
+		current_creature->Behave(this);
+
+		std::vector<Creature*> offsprings = current_creature->GetOffs();
+		for (Creature* creature : offsprings) {
+			Coords c_pos = creature->GetPos();
+			field[c_pos.x][c_pos.y] = creature->GetType();
+			creatures.push(creature);
 		}
+		creatures.push(current_creature);
 		Draw();
 	}
+
 }
 
 std::vector<std::vector<Creatures>> Park::GetSight(Coords pos, int FOV) const {
