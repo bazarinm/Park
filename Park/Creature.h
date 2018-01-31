@@ -18,8 +18,9 @@ public:
 	Creatures GetType() const;
 	bool GetStatus() const;
 protected:
+	unsigned age;
 	Creatures type;
-	unsigned int nutr;
+	unsigned nutr;
 	Coords pos;
 	std::vector<Creature*> offsprings;
 	bool is_dead;
