@@ -20,15 +20,13 @@ public:
 	Park();
 	
 	void Simulation();
-	std::vector<std::vector<Creatures>> GetSight(Coords coords, int FOV) const;
+	std::vector<std::vector<Creatures>> GetSight(Coords coords, int FOV);
 	void Draw() const;
 	void Add(Creature*);
 	void Remove(Creature*);
 private:
 	Field field;
 	std::queue<Creature*> creatures;
-
-	void Add(Creature*);
 };
 
 #endif

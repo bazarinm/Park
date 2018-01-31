@@ -4,8 +4,8 @@
 
 Park::Park()
 {
-	for (size_t i = 0; i < HEIGHT; ++i)
-		for (size_t j = 0; j < WIDTH; ++j)
+	for (std::size_t i = 0; i < HEIGHT; ++i)
+		for (std::size_t j = 0; j < WIDTH; ++j)
 			field[i][j] = Creatures::DIRT;
 
 	Grass* g = new Grass({ 3, 7 });
@@ -32,25 +32,26 @@ void Park::Simulation() {
 	Draw();
 
 	while (1) {
-		size_t length = creatures.size();
-		for (size_t i = 0; i < length; ++i) {
+		std::size_t length = creatures.size();
+		for (std::size_t i = 0; i < length; ++i) {
 			Creature* current_creature = creatures.front(); creatures.pop();
 
-		current_creature->Behave(this);
+			current_creature->Behave(this);
 
-		std::vector<Creature*> offsprings = current_creature->GetOffs();
-		for (Creature* creature : offsprings) {
-			Coords c_pos = creature->GetPos();
-			field[c_pos.x][c_pos.y] = creature->GetType();
-			creatures.push(creature);
+			std::vector<Creature*> offsprings = current_creature->GetOffs();
+			for (Creature* creature : offsprings) {
+				Coords c_pos = creature->GetPos();
+				field[c_pos.x][c_pos.y] = creature->GetType();
+				creatures.push(creature);
+			}
+			creatures.push(current_creature);
+			Draw();
 		}
-		creatures.push(current_creature);
-		Draw();
 	}
 
 }
 
-std::vector<std::vector<Creatures>> Park::GetSight(Coords pos, int FOV) const {
+	std::vector<std::vector<Creatures>> Park::GetSight(Coords coords, int FOV){
 	std::vector<std::vector<Creatures>> sight(FOV * 2 + 1, std::vector<Creatures>(FOV * 2 + 1, BARRIER));
 
 	size_t k = 0, l = 0;
