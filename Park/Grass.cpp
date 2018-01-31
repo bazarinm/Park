@@ -9,6 +9,7 @@ Grass::Grass(Coords pos) : Plant(6, pos)
 
 Grass::~Grass()
 {
+	int a;
 }
 
 int Grass::FOV = 1;
