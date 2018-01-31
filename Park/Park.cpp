@@ -51,7 +51,7 @@ void Park::Simulation() {
 
 }
 
-	std::vector<std::vector<Creatures>> Park::GetSight(Coords coords, int FOV){
+std::vector<std::vector<Creatures>> Park::GetSight(Coords pos, int FOV) const {
 	std::vector<std::vector<Creatures>> sight(FOV * 2 + 1, std::vector<Creatures>(FOV * 2 + 1, BARRIER));
 
 	size_t k = 0, l = 0;

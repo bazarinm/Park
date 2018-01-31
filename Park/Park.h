@@ -20,7 +20,7 @@ public:
 	Park();
 	
 	void Simulation();
-	std::vector<std::vector<Creatures>> GetSight(Coords coords, int FOV);
+	std::vector<std::vector<Creatures>> GetSight(Coords coords, int FOV) const;
 	void Draw() const;
 	void Add(Creature*);
 	void Remove(Creature*);
