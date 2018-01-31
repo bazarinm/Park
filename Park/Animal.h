@@ -11,7 +11,7 @@ public:
 
 private:
 	virtual void Eat() = 0;
-	virtual void Move() = 0;
+	virtual void Move(Coords) = 0;
 };
 
 #endif

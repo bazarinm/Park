@@ -2,7 +2,7 @@
 
 
 
-Creature::Creature(unsigned _nutr, Coords _pos): nutr(_nutr), pos(_pos), is_dead(false)
+Creature::Creature(unsigned _nutr, Coords _pos): nutr(_nutr), pos(_pos), is_dead(false), age(0)
 {
 }
 
@@ -25,4 +25,15 @@ bool Creature::GetStatus() const {
 
 std::vector<Creature*> Creature::GetOffs() const {
 	return offsprings;
+}
+
+Coords Creature::Convert(Coords relative, int FOV) const {
+	Coords real = pos;
+	real.x = real.x - FOV + relative.x;
+	real.y = real.y - FOV + relative.y;
+	return real;
+}
+
+bool Creature::InBound(Coords pos, int FOV) const {
+	return (pos.x >= 0 && pos.y >= 0 && pos.x <= 2 * FOV && pos.y <= 2 * FOV);
 }

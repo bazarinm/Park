@@ -1,16 +1,15 @@
 #include "Park.h"
 #include "Grass.h"
+#include "Rabbit.h"
+#include "Fox.h"
 #include <iostream>
+#include <typeinfo>
 
 Park::Park()
 {
-	for (size_t i = 0; i < HEIGHT; ++i)
-		for (size_t j = 0; j < WIDTH; ++j)
-			field[i][j] = Creatures::DIRT;
-
-	Grass* g = new Grass({ 3, 7 });
-	field[3][7] = GRASS;
-	creatures.push(g);
+	for (std::size_t i = 0; i < HEIGHT; ++i)
+		for (std::size_t j = 0; j < WIDTH; ++j)
+			field[i][j] = { nullptr, {}, {} };
 }
 
 //Park::~Park()
@@ -19,32 +18,113 @@ Park::Park()
 
 void Park::Add(Creature* c) {
 	Coords pos = c->GetPos();
-	field[pos.x][pos.y] = c->GetType();
+	Creatures type = GetType(c);
+
+	if (type == GRASS) {
+		field[pos.x][pos.y].grass = c;
+	}
+	else if (type == RABBIT) {
+		field[pos.x][pos.y].rabbits.push_back(c);
+	}
+	else if (type == FOX) {
+		field[pos.x][pos.y].foxes.push_back(c);
+	}
+
 	creatures.push(c);
 }
 
 void Park::Remove(Creature* c) {
 	Coords pos = c->GetPos();
-	field[pos.x][pos.y] = DIRT;
+	Creatures type = GetType(c);
+
+	if (type == GRASS) {
+		field[pos.x][pos.y].grass = nullptr;
+	}
+	else if (type == RABBIT) {
+		field[pos.x][pos.y].rabbits.pop_back();
+	}
+	else if (type == FOX) {
+		field[pos.x][pos.y].foxes.pop_back();
+	}
+}
+
+Creatures Park::GetType(Creature* c) const {
+	Creatures type;
+	
+	if (typeid(*c) == typeid(Grass)) 
+		type = GRASS;
+	else if (typeid(*c) == typeid(Rabbit))
+		type = RABBIT;
+	else if (typeid(*c) == typeid(Fox))
+		type = FOX;
+
+	return type;
 }
 
 void Park::Simulation() {
 	Draw();
-
+	Action act;
 	while (1) {
-		size_t length = creatures.size();
-		for (size_t i = 0; i < length; ++i) {
+		std::size_t length = creatures.size();
+		for (std::size_t i = 0; i < length; ++i) {
 			Creature* current_creature = creatures.front(); creatures.pop();
 
-		current_creature->Behave(this);
+			Coords old_pos = current_creature->GetPos();
 
-		std::vector<Creature*> offsprings = current_creature->GetOffs();
-		for (Creature* creature : offsprings) {
-			Coords c_pos = creature->GetPos();
-			field[c_pos.x][c_pos.y] = creature->GetType();
-			creatures.push(creature);
+			act = current_creature->Behave(this);
+
+			if (act == PROCREATE) {
+				Creatures type = GetType(current_creature);
+				Coords pos = current_creature->GetPos();
+
+				if (type == RABBIT) {
+					field[old_pos.x][old_pos.y].rabbits.pop_back();
+
+					field[pos.x][pos.y].rabbits.push_back(current_creature);
+				}
+				if (type == FOX) {
+					field[old_pos.x][old_pos.y].foxes.pop_back();
+
+					field[pos.x][pos.y].foxes.push_back(current_creature);
+				}
+
+				std::vector<Creature*> offsprings = current_creature->GetOffs();
+				for (Creature* creature : offsprings) {
+					Add(creature);
+				}
+			}
+
+			else if (act == EAT) {
+				Creatures type = GetType(current_creature);
+				Coords pos = current_creature->GetPos();
+
+				if (type == RABBIT) {
+					field[old_pos.x][old_pos.y].rabbits.pop_back();
+
+					field[pos.x][pos.y].grass->Death();
+					field[pos.x][pos.y].grass = nullptr;
+					field[pos.x][pos.y].rabbits.push_back(current_creature);
+				}
+				if (type == FOX) {
+					field[old_pos.x][old_pos.y].foxes.pop_back();
+
+					field[pos.x][pos.y].rabbits.back()->Death();
+					field[pos.x][pos.y].rabbits.pop_back();
+					field[pos.x][pos.y].foxes.push_back(current_creature);
+				}
+			}
+
+			else if (act == DEATH) {
+				Remove(current_creature);
+			}
+
+			if (act != DEATH) {
+				creatures.push(current_creature);
+			}
+
+			Draw();
+
 		}
-		creatures.push(current_creature);
 		Draw();
 	}
 
@@ -65,8 +145,17 @@ std::vector<std::vector<Creatures>> Park::GetSight(Coords pos, int FOV) const {
 				++l;
 				continue;
 			}
-			else
-				sight[k][l] = field[pos.x + i][pos.y + j];
+			else {
+				Tile tile = field[pos.x + i][pos.y + j];
+				if (tile.foxes.size() > 0)
+					sight[k][l] = FOX;
+				else if (tile.rabbits.size() > 0)
+					sight[k][l] = RABBIT;
+				else if (tile.grass != nullptr)
+					sight[k][l] = GRASS;
+				else
+					sight[k][l] = DIRT;
+			}
 			++l;
 		}
 		l = 0;
@@ -79,14 +168,15 @@ std::vector<std::vector<Creatures>> Park::GetSight(Coords pos, int FOV) const {
 void Park::Draw() const {
 	for (size_t i = 0; i < HEIGHT; ++i) {
 		for (size_t j = 0; j < WIDTH; ++j) {
-			if (field[i][j] == DIRT)
-				std::cout << '.';
-			else if (field[i][j] == GRASS)
-				std::cout << (char)176;
-			else if (field[i][j] == RABBIT)
-				std::cout << 'R';
-			else if (field[i][j] == FOX)
+			Tile tile = field[i][j];
+			if (tile.foxes.size() > 0)
 				std::cout << 'F';
+			else if (tile.rabbits.size() > 0)
+				std::cout << 'R';
+			else if (tile.grass != nullptr)
+				std::cout << (char)176;
+			else
+				std::cout << '.';
 		}
 		std::cout << std::endl;
 	}

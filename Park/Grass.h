@@ -12,12 +12,14 @@ public:
 	Grass(Coords pos);
 	~Grass();
 
-	void Behave(const Park*) override;
+	Action Behave(const Park*) override;
 
-private:
-	std::vector<std::vector<Creatures>> Sight;
-	static int FOV;
 	void Death() override;
+private:
+	//std::vector<std::vector<Creatures>> Sight;
+	int FOV;
+	void Idle() override;
+
 	void Procreate() override;
 	void Photosynthesis() override;
 };
