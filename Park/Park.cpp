@@ -17,28 +17,37 @@ Park::Park()
 //{
 //}
 
-void Park::Simulation() {
-	Draw();
-
-	while (!creatures.empty()) {
-		Creature* current_creature = creatures.front(); creatures.pop();
-
-		current_creature->Behave(this);
-
-		std::vector<Creature*> offsprings = current_creature->GetOffs();
-		for (Creature* creature : offsprings) 
-			Add(creature);
-
-		creatures.push(current_creature);
-		Draw();
-	}
-
-}
-
 void Park::Add(Creature* c) {
 	Coords pos = c->GetPos();
 	field[pos.x][pos.y] = c->GetType();
 	creatures.push(c);
+}
+
+void Park::Remove(Creature* c) {
+	Coords pos = c->GetPos();
+	field[pos.x][pos.y] = DIRT;
+}
+
+void Park::Simulation() {
+	Draw();
+
+	while (1) {
+		size_t length = creatures.size();
+		for (size_t i = 0; i < length; ++i) {
+			Creature* current_creature = creatures.front(); creatures.pop();
+
+		current_creature->Behave(this);
+
+		std::vector<Creature*> offsprings = current_creature->GetOffs();
+		for (Creature* creature : offsprings) {
+			Coords c_pos = creature->GetPos();
+			field[c_pos.x][c_pos.y] = creature->GetType();
+			creatures.push(creature);
+		}
+		creatures.push(current_creature);
+		Draw();
+	}
+
 }
 
 std::vector<std::vector<Creatures>> Park::GetSight(Coords pos, int FOV) const {
@@ -71,9 +80,9 @@ void Park::Draw() const {
 	for (size_t i = 0; i < HEIGHT; ++i) {
 		for (size_t j = 0; j < WIDTH; ++j) {
 			if (field[i][j] == DIRT)
-				std::cout << 'D';
+				std::cout << '.';
 			else if (field[i][j] == GRASS)
-				std::cout << 'G';
+				std::cout << (char)176;
 			else if (field[i][j] == RABBIT)
 				std::cout << 'R';
 			else if (field[i][j] == FOX)

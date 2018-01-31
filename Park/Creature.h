@@ -16,13 +16,16 @@ public:
 	Coords GetPos() const;
 	std::vector<Creature*> GetOffs() const;
 	Creatures GetType() const;
+	bool GetStatus() const;
 protected:
-	static const Creatures type;
-	unsigned int nutr;
+	unsigned age;
+	Creatures type;
+	unsigned nutr;
 	Coords pos;
 	std::vector<Creature*> offsprings;
+	bool is_dead;
 private:
-	
+	virtual void Death() = 0;
 	virtual void Procreate() = 0;
 };
 

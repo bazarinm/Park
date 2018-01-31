@@ -7,7 +7,6 @@ class Plant :
 {
 public:
 	Plant(unsigned nutr, Coords pos);
-
 private:
 	virtual void Photosynthesis() = 0;
 };
