@@ -13,15 +13,17 @@ Grass::~Grass()
 }
 
 
-void Grass::Procreate() {
+bool Grass::Procreate() {
 	for (int i = -1; i < 2; ++i)
 		for (int j = -1; j < 2; ++j)
 			if (sight[FOV + i][FOV + j] == Creatures::DIRT) {
 				Grass* offspring = new Grass({ pos.x + i, pos.y + j });
 				offsprings.push_back(offspring);
 				nutr -= 3;
-				return;
+				return true;
 			}
+
+	return false;
 }
 
 void Grass::Idle() {

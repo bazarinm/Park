@@ -17,7 +17,7 @@ Action Rabbit::Behave(const Park* park) {
 	See();
 
 	if (!is_dead) {
-		if (age > 7 || nutr == 0) {
+		if (age >= 11 || nutr == 0) {
 			Death();
 			act = DEATH;
 		}
@@ -26,7 +26,7 @@ Action Rabbit::Behave(const Park* park) {
 			Eat();
 			act = EAT;
 		}
-		else if (nutr >= 6 && age % 3 == 0 && closest_rabbit.x != -1) {
+		else if (nutr >= 5 && age % 2 == 0 && age != 0 && closest_rabbit.x != -1) {
 			Procreate();
 			act = PROCREATE;
 		}
@@ -45,21 +45,50 @@ void Rabbit::Idle() {
 	--nutr;
 }
 
-void Rabbit::Procreate() {
+bool Rabbit::Procreate() {
 	Move(closest_rabbit);
-	Rabbit* offspring = new Rabbit(pos);
-	offsprings.push_back(offspring);
-	nutr -= 3;
+
+	Coords direction = rel_pos;
+	//pos = Convert(rel_pos, FOV);
+	for (int i = -1; i <= 1; ++i) {
+		for (int j = -1; j <= 1; ++j) {
+			direction.x += i;
+			direction.y += j;
+			if (InBound(direction, FOV))
+				if (sight[direction.x][direction.y] == GRASS || sight[direction.x][direction.y] == DIRT) {
+					Rabbit* offspring = new Rabbit(Convert(direction, FOV));
+					pos = Convert(rel_pos, FOV);
+					nutr -= 3;
+					offsprings.push_back(offspring);
+					return true;
+				}
+		}
+	}
+
+	return false;
 }
 
-void Rabbit::Eat() {
-	Move(closest_grass);
-	nutr += 3;
+bool Rabbit::Eat() {
+	pos = Convert(closest_grass, FOV);
+	nutr += 4;
+	return true;
 }
 
-void Rabbit::Move(Coords direction) {
-	pos = direction;
-	--nutr;
+bool Rabbit::Move(Coords direction) {
+	for (int i = -1; i <= 1; ++i) {
+		for (int j = -1; j <= 1; ++j) {
+			direction.x += i;
+			direction.y += j;
+			if (InBound(direction, FOV))
+				if (sight[direction.x][direction.y] == GRASS || sight[direction.x][direction.y] == DIRT) {
+					rel_pos = direction;
+					--nutr;
+					return true;
+				}
+		}
+	}
+
+	return false;
 }
 
 void Rabbit::Death() {
@@ -79,9 +108,11 @@ void Rabbit::See() {
 	closest_fox = { -1, -1 };
 
 	Coords step;
+
+	std::vector<std::vector<Creatures>> temp = sight;
 	while (!steps.empty()) {
 		step = steps.front(), steps.pop();
-		sight[step.x][step.y] = BARRIER;
+		temp[step.x][step.y] = BARRIER;
 
 		std::array<Coords, 4> next;
 		next[0] = up(step);
@@ -92,23 +123,23 @@ void Rabbit::See() {
 		for (Coords next_step : next) {
 			if (!InBound(next_step, FOV))
 				continue;
-			if (sight[next_step.x][next_step.y] != BARRIER) {
+			if (temp[next_step.x][next_step.y] != BARRIER) {
 				steps.push(next_step);
 
-				if (sight[next_step.x][next_step.y] == GRASS && !grass_found) {
-					closest_grass = Convert(next_step, FOV);
+				if (temp[next_step.x][next_step.y] == GRASS && !grass_found) {
+					closest_grass = next_step;
 					grass_found = true;
 				}
-				else if (sight[next_step.x][next_step.y] == RABBIT && !rabbit_found) {
-					closest_rabbit = Convert(next_step, FOV);
+				else if (temp[next_step.x][next_step.y] == RABBIT && !rabbit_found) {
+					closest_rabbit = next_step;
 					rabbit_found = true;
 				}
-				else if (sight[next_step.x][next_step.y] == FOX && !fox_found) {
-					closest_fox = Convert(next_step, FOV);
+				else if (temp[next_step.x][next_step.y] == FOX && !fox_found) {
+					closest_fox = next_step;
 					fox_found = true;
 				}
 
-				sight[next_step.x][next_step.y] = BARRIER;
+				temp[next_step.x][next_step.y] = BARRIER;
 			}
 		}
 

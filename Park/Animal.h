@@ -10,8 +10,8 @@ public:
 	Animal(unsigned nutr, Coords pos);
 
 private:
-	virtual void Eat() = 0;
-	virtual void Move(Coords) = 0;
+	virtual bool Eat() = 0;
+	virtual bool Move(Coords) = 0;
 };
 
 #endif

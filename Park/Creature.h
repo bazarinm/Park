@@ -24,6 +24,7 @@ protected:
 	unsigned age;
 	Creatures type;
 	unsigned nutr;
+	Coords rel_pos;
 	Coords pos;
 	std::vector<Creature*> offsprings;
 	bool is_dead;
@@ -33,7 +34,7 @@ protected:
 private:
 	virtual void Idle() = 0;
 
-	virtual void Procreate() = 0;
+	virtual bool Procreate() = 0;
 };
 
 #endif

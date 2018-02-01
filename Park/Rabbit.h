@@ -15,10 +15,10 @@ public:
 
 private:
 	int FOV;
-	void Eat() override;
+	bool Eat() override;
 	void Idle() override;
-	void Move(Coords) override;
-	void Procreate() override;
+	bool Move(Coords) override;
+	bool Procreate() override;
 
 	void See();
 

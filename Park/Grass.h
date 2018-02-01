@@ -20,7 +20,7 @@ private:
 	int FOV;
 	void Idle() override;
 
-	void Procreate() override;
+	bool Procreate() override;
 	void Photosynthesis() override;
 };
 

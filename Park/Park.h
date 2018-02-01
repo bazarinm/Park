@@ -7,13 +7,13 @@
 //#include "Grass.h"
 //#include "Rabbit.h"
 
-struct Tile { Creature* grass; std::vector<Creature*> rabbits; std::vector<Creature*> foxes; };
+struct Tile { Creature* grass; Creature* rabbit; Creature* fox; };
 
 #include <queue>
 #include <array>
 
-const int WIDTH = 10;
-const int HEIGHT = 10;
+const int WIDTH = 30;
+const int HEIGHT = 30;
 using Field = std::array<std::array<Tile, WIDTH>, HEIGHT>;
 
 class Park

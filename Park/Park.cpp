@@ -4,12 +4,13 @@
 #include "Fox.h"
 #include <iostream>
 #include <typeinfo>
+#include "Windows.h"
 
 Park::Park()
 {
 	for (std::size_t i = 0; i < HEIGHT; ++i)
 		for (std::size_t j = 0; j < WIDTH; ++j)
-			field[i][j] = { nullptr, {}, {} };
+			field[i][j] = { nullptr, nullptr, nullptr };
 }
 
 //Park::~Park()
@@ -24,10 +25,10 @@ void Park::Add(Creature* c) {
 		field[pos.x][pos.y].grass = c;
 	}
 	else if (type == RABBIT) {
-		field[pos.x][pos.y].rabbits.push_back(c);
+		field[pos.x][pos.y].rabbit = c;
 	}
 	else if (type == FOX) {
-		field[pos.x][pos.y].foxes.push_back(c);
+		field[pos.x][pos.y].fox = c;
 	}
 
 	creatures.push(c);
@@ -41,10 +42,10 @@ void Park::Remove(Creature* c) {
 		field[pos.x][pos.y].grass = nullptr;
 	}
 	else if (type == RABBIT) {
-		field[pos.x][pos.y].rabbits.pop_back();
+		field[pos.x][pos.y].rabbit = nullptr;
 	}
 	else if (type == FOX) {
-		field[pos.x][pos.y].foxes.pop_back();
+		field[pos.x][pos.y].fox = nullptr;
 	}
 }
 
@@ -78,14 +79,14 @@ void Park::Simulation() {
 				Coords pos = current_creature->GetPos();
 
 				if (type == RABBIT) {
-					field[old_pos.x][old_pos.y].rabbits.pop_back();
+					field[old_pos.x][old_pos.y].rabbit = nullptr;
 
-					field[pos.x][pos.y].rabbits.push_back(current_creature);
+					field[pos.x][pos.y].rabbit = current_creature;
 				}
 				if (type == FOX) {
-					field[old_pos.x][old_pos.y].foxes.pop_back();
+					field[old_pos.x][old_pos.y].fox = nullptr;
 
-					field[pos.x][pos.y].foxes.push_back(current_creature);
+					field[pos.x][pos.y].fox = current_creature;
 				}
 
 				std::vector<Creature*> offsprings = current_creature->GetOffs();
@@ -99,18 +100,18 @@ void Park::Simulation() {
 				Coords pos = current_creature->GetPos();
 
 				if (type == RABBIT) {
-					field[old_pos.x][old_pos.y].rabbits.pop_back();
+					field[old_pos.x][old_pos.y].rabbit = nullptr;
 
 					field[pos.x][pos.y].grass->Death();
 					field[pos.x][pos.y].grass = nullptr;
-					field[pos.x][pos.y].rabbits.push_back(current_creature);
+					field[pos.x][pos.y].rabbit = current_creature;
 				}
 				if (type == FOX) {
-					field[old_pos.x][old_pos.y].foxes.pop_back();
+					field[old_pos.x][old_pos.y].fox = nullptr;
 
-					field[pos.x][pos.y].rabbits.back()->Death();
-					field[pos.x][pos.y].rabbits.pop_back();
-					field[pos.x][pos.y].foxes.push_back(current_creature);
+					field[pos.x][pos.y].rabbit->Death();
+					field[pos.x][pos.y].rabbit = nullptr;
+					field[pos.x][pos.y].fox = current_creature;
 				}
 			}
 
@@ -125,7 +126,7 @@ void Park::Simulation() {
 			Draw();
 
 		}
-		Draw();
+		//Draw();
 	}
 
 }
@@ -147,9 +148,9 @@ std::vector<std::vector<Creatures>> Park::GetSight(Coords pos, int FOV) const {
 			}
 			else {
 				Tile tile = field[pos.x + i][pos.y + j];
-				if (tile.foxes.size() > 0)
+				if (tile.fox != nullptr)
 					sight[k][l] = FOX;
-				else if (tile.rabbits.size() > 0)
+				else if (tile.rabbit != nullptr)
 					sight[k][l] = RABBIT;
 				else if (tile.grass != nullptr)
 					sight[k][l] = GRASS;
@@ -167,19 +168,21 @@ std::vector<std::vector<Creatures>> Park::GetSight(Coords pos, int FOV) const {
 
 void Park::Draw() const {
 	for (size_t i = 0; i < HEIGHT; ++i) {
+		std::cout << std::endl;
+
 		for (size_t j = 0; j < WIDTH; ++j) {
 			Tile tile = field[i][j];
-			if (tile.foxes.size() > 0)
+			if (tile.fox != nullptr)
 				std::cout << 'F';
-			else if (tile.rabbits.size() > 0)
+			else if (tile.rabbit != nullptr)
 				std::cout << 'R';
 			else if (tile.grass != nullptr)
 				std::cout << (char)176;
 			else
 				std::cout << '.';
 		}
-		std::cout << std::endl;
 	}
-
-	std::cout << std::endl << std::endl;
+	Sleep(500);
+	system("cls");
+	//std::cout << std::endl << std::endl;
 }
