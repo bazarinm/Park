@@ -2,7 +2,8 @@
 
 
 
-Creature::Creature(unsigned _nutr, Coords _pos): nutr(_nutr), pos(_pos), is_dead(false), age(0)
+Creature::Creature(unsigned _nutr, Coords _pos, const Park& _territory): 
+	nutr(_nutr), pos(_pos), territory(_territory), is_dead(false), age(0)
 {
 }
 

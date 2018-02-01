@@ -27,9 +27,14 @@ public:
 	void Draw() const;
 	void Add(Creature*);
 	void Remove(Creature*);
+	Tile operator[](Coords) const;
 private:
 	Field field;
+	void Move(Creature* c,Creatures type, Coords old_pos);
+	void Eat(Creature* c, Creatures type);
+	bool isEaten(Creature* c, Creatures type);
 	std::queue<Creature*> creatures;
+	Tile& operator[](Coords);
 };
 
 #endif

@@ -4,7 +4,7 @@
 #include "Fox.h"
 #include <iostream>
 #include <typeinfo>
-#include "Windows.h"
+#include <Windows.h>
 
 Park::Park()
 {
@@ -62,71 +62,84 @@ Creatures Park::GetType(Creature* c) const {
 	return type;
 }
 
+Tile Park::operator[](Coords pos) const {
+	return field[pos.x][pos.y];
+}
+
+Tile& Park::operator[](Coords pos) {
+	return field[pos.x][pos.y];
+}
+
+void Park::Move(Creature* c, Creatures type, Coords old_pos) {
+	Coords pos = c->GetPos();
+
+	if (pos != old_pos) {
+		Creatures type = GetType(c);
+
+		if (type == RABBIT) {
+			field[old_pos.x][old_pos.y].rabbit = nullptr;
+
+			field[pos.x][pos.y].rabbit = c;
+		}
+		if (type == FOX) {
+			field[old_pos.x][old_pos.y].fox = nullptr;
+
+			field[pos.x][pos.y].fox = c;
+		}
+	}
+}
+
+void Park::Eat(Creature* c, Creatures type) {
+	Coords pos = c->GetPos();
+
+	if (type == RABBIT) 
+		field[pos.x][pos.y].grass = nullptr;
+	else if (type == FOX) 
+		field[pos.x][pos.y].rabbit = nullptr;
+}
+
+bool Park::isEaten(Creature* c, Creatures type) {
+	Coords pos = c->GetPos();
+
+	return ((type == GRASS && field[pos.x][pos.y].grass == nullptr) ||
+			(type == RABBIT && field[pos.x][pos.y].rabbit == nullptr) ||
+			(type == FOX && field[pos.x][pos.y].fox == nullptr));
+}
+
 void Park::Simulation() {
 	Draw();
-	Action act;
-	while (1) {
+
+	while (!creatures.empty()) {
 		std::size_t length = creatures.size();
 		for (std::size_t i = 0; i < length; ++i) {
 			Creature* current_creature = creatures.front(); creatures.pop();
-
 			Coords old_pos = current_creature->GetPos();
+			Creatures type = GetType(current_creature);
 
-			act = current_creature->Behave(this);
+			Action act = current_creature->Behave();
 
-			if (act == PROCREATE) {
-				Creatures type = GetType(current_creature);
-				Coords pos = current_creature->GetPos();
+			Move(current_creature, type, old_pos);
 
-				if (type == RABBIT) {
-					field[old_pos.x][old_pos.y].rabbit = nullptr;
+			if (!isEaten(current_creature, type)) {
+				if (act == PROCREATE) {
+					std::vector<Creature*> offsprings = current_creature->GetOffs();
 
-					field[pos.x][pos.y].rabbit = current_creature;
+					for (Creature* creature : offsprings) 
+						Add(creature);
 				}
-				if (type == FOX) {
-					field[old_pos.x][old_pos.y].fox = nullptr;
+				else if (act == EAT) 
+					Eat(current_creature, type);
+				else if (act == DEATH)
+					Remove(current_creature);
 
-					field[pos.x][pos.y].fox = current_creature;
-				}
-
-				std::vector<Creature*> offsprings = current_creature->GetOffs();
-				for (Creature* creature : offsprings) {
-					Add(creature);
-				}
-			}
-
-			else if (act == EAT) {
-				Creatures type = GetType(current_creature);
-				Coords pos = current_creature->GetPos();
-
-				if (type == RABBIT) {
-					field[old_pos.x][old_pos.y].rabbit = nullptr;
-
-					field[pos.x][pos.y].grass->Death();
-					field[pos.x][pos.y].grass = nullptr;
-					field[pos.x][pos.y].rabbit = current_creature;
-				}
-				if (type == FOX) {
-					field[old_pos.x][old_pos.y].fox = nullptr;
-
-					field[pos.x][pos.y].rabbit->Death();
-					field[pos.x][pos.y].rabbit = nullptr;
-					field[pos.x][pos.y].fox = current_creature;
+				if (act != DEATH) {
+					creatures.push(current_creature);
 				}
 			}
-
-			else if (act == DEATH) {
-				Remove(current_creature);
-			}
-
-			if (act != DEATH) {
-				creatures.push(current_creature);
-			}
-
-			Draw();
 
 		}
-		//Draw();
+
+		Draw();
 	}
 
 }

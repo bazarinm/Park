@@ -10,9 +10,9 @@ class Park;
 class Creature
 {
 public:
-	Creature(unsigned nutr, Coords pos);
+	Creature(unsigned nutr, Coords pos, const Park& territory);
 
-	virtual Action Behave(const Park*) = 0;
+	virtual Action Behave() = 0;
 	Coords GetPos() const;
 	std::vector<Creature*> GetOffs() const;
 	Creatures GetType() const;
@@ -20,6 +20,7 @@ public:
 
 	virtual void Death() = 0;
 protected:
+	const Park& territory;
 	std::vector<std::vector<Creatures>> sight;
 	unsigned age;
 	Creatures type;

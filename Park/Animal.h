@@ -7,7 +7,7 @@ class Animal :
 	public Creature
 {
 public:
-	Animal(unsigned nutr, Coords pos);
+	Animal(unsigned nutr, Coords pos, const Park& _territory);
 
 private:
 	virtual bool Eat() = 0;

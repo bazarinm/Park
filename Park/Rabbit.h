@@ -6,10 +6,10 @@ class Rabbit :
 	public Animal
 {
 public:
-	Rabbit(Coords pos);
+	Rabbit(Coords pos, const Park& territory);
 	~Rabbit();
 
-	Action Behave(const Park*) override;
+	Action Behave() override;
 
 	void Death() override;
 

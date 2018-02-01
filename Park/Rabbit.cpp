@@ -1,7 +1,8 @@
 #include "Rabbit.h"
 #include "Park.h"
 
-Rabbit::Rabbit(Coords pos) : Animal(6, pos), FOV(3)
+Rabbit::Rabbit(Coords pos, const Park& territory) : 
+	Animal(6, pos, territory), FOV(3)
 {
 
 }
@@ -11,9 +12,9 @@ Rabbit::~Rabbit()
 {
 }
 
-Action Rabbit::Behave(const Park* park) {
+Action Rabbit::Behave() {
 	Action act = IDLE;
-	sight = park->GetSight(pos, FOV);
+	sight = territory.GetSight(pos, FOV);
 	See();
 
 	if (!is_dead) {
@@ -56,7 +57,7 @@ bool Rabbit::Procreate() {
 			direction.y += j;
 			if (InBound(direction, FOV))
 				if (sight[direction.x][direction.y] == GRASS || sight[direction.x][direction.y] == DIRT) {
-					Rabbit* offspring = new Rabbit(Convert(direction, FOV));
+					Rabbit* offspring = new Rabbit(Convert(direction, FOV), territory);
 					pos = Convert(rel_pos, FOV);
 					nutr -= 3;
 					offsprings.push_back(offspring);

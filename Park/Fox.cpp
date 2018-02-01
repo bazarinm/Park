@@ -2,7 +2,8 @@
 
 
 
-Fox::Fox(unsigned nutr, Coords pos) : Animal(nutr, pos)
+Fox::Fox(Coords pos, const Park& territory): 
+	Animal(nutr, pos, territory)
 {
 }
 

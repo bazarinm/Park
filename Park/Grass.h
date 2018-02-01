@@ -9,10 +9,10 @@ class Grass :
 	public Plant
 {
 public:
-	Grass(Coords pos);
+	Grass(Coords pos, const Park& territory);
 	~Grass();
 
-	Action Behave(const Park*) override;
+	Action Behave() override;
 
 	void Death() override;
 private:

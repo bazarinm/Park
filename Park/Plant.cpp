@@ -2,7 +2,8 @@
 
 
 
-Plant::Plant(unsigned nutr, Coords pos): Creature(nutr, pos)
+Plant::Plant(unsigned nutr, Coords pos, const Park& territory): 
+	Creature(nutr, pos, territory)
 {
 }
 
