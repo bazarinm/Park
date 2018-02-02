@@ -14,22 +14,22 @@ public:
 	void Death() override;
 
 private:
-	int FOV;
-	bool Eat() override;
+	//int FOV;
+	bool eat() override;
 	void Idle() override;
-	bool Move(Coords) override;
+	bool move(Coords) override;
 	bool Procreate() override;
 
-	void See();
+	//void See();
 
-	Coords closest_grass;
-	Coords closest_rabbit;
-	Coords closest_fox;
+	//Coords closest_grass;
+	//Coords closest_rabbit;
+	//Coords closest_fox;
 
-	Coords up(Coords) const;
-	Coords down(Coords) const;
-	Coords left(Coords) const;
-	Coords right(Coords) const;
+	//Coords up(Coords) const;
+	//Coords down(Coords) const;
+	//Coords left(Coords) const;
+	//Coords right(Coords) const;
 };
 
 #endif

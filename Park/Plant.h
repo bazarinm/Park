@@ -6,7 +6,7 @@ class Plant :
 	public Creature
 {
 public:
-	Plant(unsigned nutr, Coords pos, const Park& _territory);
+	Plant(unsigned nutr, Coords pos, const Park& _territory, int FOV);
 private:
 	virtual void Photosynthesis() = 0;
 };

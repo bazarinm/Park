@@ -17,9 +17,8 @@ Park::Park()
 //{
 //}
 
-void Park::Add(Creature* c) {
+void Park::Add(Creature* c, Creatures type) {
 	Coords pos = c->GetPos();
-	Creatures type = GetType(c);
 
 	if (type == GRASS) {
 		field[pos.x][pos.y].grass = c;
@@ -34,9 +33,8 @@ void Park::Add(Creature* c) {
 	creatures.push(c);
 }
 
-void Park::Remove(Creature* c) {
+void Park::Remove(Creature* c, Creatures type) {
 	Coords pos = c->GetPos();
-	Creatures type = GetType(c);
 
 	if (type == GRASS) {
 		field[pos.x][pos.y].grass = nullptr;
@@ -62,8 +60,28 @@ Creatures Park::GetType(Creature* c) const {
 	return type;
 }
 
-Tile Park::operator[](Coords pos) const {
-	return field[pos.x][pos.y];
+bool Park::inBound(Coords pos) const {
+	return pos.x >= 0 && pos.x < HEIGHT && pos.y >= 0 && pos.y < WIDTH;
+}
+
+Creatures Park::operator[](Coords pos) const {
+	Creatures c;
+
+	if (inBound(pos)) {
+		Tile t = field[pos.x][pos.y];
+		if (t.fox != nullptr)
+			c = FOX;
+		else if (t.rabbit != nullptr)
+			c = RABBIT;
+		else if (t.grass != nullptr)
+			c = GRASS;
+		else
+			c = DIRT;
+	}
+	else 
+		c = BARRIER;
+
+	return c;
 }
 
 Tile& Park::operator[](Coords pos) {
@@ -118,19 +136,20 @@ void Park::Simulation() {
 
 			Action act = current_creature->Behave();
 
-			Move(current_creature, type, old_pos);
+			if (type != GRASS)
+				Move(current_creature, type, old_pos);
 
 			if (!isEaten(current_creature, type)) {
 				if (act == PROCREATE) {
 					std::vector<Creature*> offsprings = current_creature->GetOffs();
 
 					for (Creature* creature : offsprings) 
-						Add(creature);
+						Add(creature, type);
 				}
 				else if (act == EAT) 
 					Eat(current_creature, type);
 				else if (act == DEATH)
-					Remove(current_creature);
+					Remove(current_creature, type);
 
 				if (act != DEATH) {
 					creatures.push(current_creature);
@@ -195,7 +214,7 @@ void Park::Draw() const {
 				std::cout << '.';
 		}
 	}
-	Sleep(500);
-	system("cls");
-	//std::cout << std::endl << std::endl;
+	//Sleep(500);
+	//system("cls");
+	std::cout << std::endl << std::endl;
 }

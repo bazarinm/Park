@@ -10,7 +10,7 @@ class Park;
 class Creature
 {
 public:
-	Creature(unsigned nutr, Coords pos, const Park& territory);
+	Creature(unsigned nutr, Coords pos, const Park& territory, int FOV);
 
 	virtual Action Behave() = 0;
 	Coords GetPos() const;
@@ -21,21 +21,39 @@ public:
 	virtual void Death() = 0;
 protected:
 	const Park& territory;
+	const int FOV;
 	std::vector<std::vector<Creatures>> sight;
 	unsigned age;
 	Creatures type;
 	unsigned nutr;
-	Coords rel_pos;
+	Coords center;
 	Coords pos;
 	std::vector<Creature*> offsprings;
 	bool is_dead;
 
-	Coords Convert(Coords, int FOV) const;
-	bool InBound(Coords, int FOV) const;
+	Coords closest_grass;
+	Coords closest_rabbit;
+	Coords closest_fox;
+
+	bool grass_found;
+	bool rabbit_found;
+	bool fox_found;
+
+	Coords ConvToReal(Coords) const;
+	Coords ConvToRelat(Coords) const;
+	bool InBound(Coords) const;
+	void GetSight();
 private:
 	virtual void Idle() = 0;
-
 	virtual bool Procreate() = 0;
+
+
+	void See();
+
+	Coords up(Coords) const;
+	Coords down(Coords) const;
+	Coords left(Coords) const;
+	Coords right(Coords) const;
 };
 
 #endif

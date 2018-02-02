@@ -25,9 +25,9 @@ public:
 	std::vector<std::vector<Creatures>> GetSight(Coords coords, int FOV) const;
 	Creatures GetType(Creature*) const;
 	void Draw() const;
-	void Add(Creature*);
-	void Remove(Creature*);
-	Tile operator[](Coords) const;
+	void Add(Creature*, Creatures type);
+	void Remove(Creature*, Creatures type);
+	Creatures operator[](Coords) const;
 private:
 	Field field;
 	void Move(Creature* c,Creatures type, Coords old_pos);
@@ -35,6 +35,7 @@ private:
 	bool isEaten(Creature* c, Creatures type);
 	std::queue<Creature*> creatures;
 	Tile& operator[](Coords);
+	bool inBound(Coords) const;
 };
 
 #endif

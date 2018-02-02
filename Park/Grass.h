@@ -17,7 +17,7 @@ public:
 	void Death() override;
 private:
 	//std::vector<std::vector<Creatures>> Sight;
-	int FOV;
+	//int FOV;
 	void Idle() override;
 
 	bool Procreate() override;

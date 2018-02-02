@@ -3,13 +3,14 @@
 
 
 Grass::Grass(Coords pos, const Park& territory): 
-	Plant(6, pos, territory), FOV(1)
+	Plant(6, pos, territory, 1)
 {
 	type = GRASS;
 }
 
 Grass::~Grass()
 {
+	int a;
 }
 
 
