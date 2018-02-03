@@ -19,7 +19,7 @@ bool Grass::Procreate() {
 		for (int j = -1; j < 2; ++j)
 			if (sight[FOV + i][FOV + j] == Creatures::DIRT) {
 				Grass* offspring = new Grass({ pos.x + i, pos.y + j }, territory);
-				offsprings.push_back(offspring);
+				children.push_back(offspring);
 				nutr -= 3;
 				return true;
 			}
@@ -44,7 +44,7 @@ Action Grass::Behave() {
 	Action act = IDLE;
 	
 	if (!is_dead) {
-		offsprings.clear();
+		children.clear();
 		sight = territory.GetSight(pos, FOV);
 
 		if (nutr != 0) {

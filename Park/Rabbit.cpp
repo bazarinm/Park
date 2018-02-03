@@ -4,92 +4,111 @@
 Rabbit::Rabbit(Coords pos, const Park& territory) : 
 	Animal(6, pos, territory, 3)
 {
-
 }
 
-
-Rabbit::~Rabbit()
-{
-}
-
-Action Rabbit::Behave() {
-	Action act = IDLE;
-	GetSight();
-
-	if (!is_dead) {
-		if (age >= 11 || nutr == 0) {
-			Death();
-			act = DEATH;
-		}
-		else if (nutr <= 2 && grass_found) {
-			eat();
-			act = EAT;
-		}
-		else if (nutr >= 4 && age % 2 == 0 && age != 0 && rabbit_found) {
-			Procreate();
-			act = PROCREATE;
-		}
-		else { Idle(); act = IDLE; };
-
-		++age;
-	}
+void Rabbit::Behave() {
+	if (isHungry() && seekFood()) //hungry and found food
+		eat();
+	else if (isReady() && seekPartner()) //ready and found partner
+		Procreate();
 	else
-		act = DEATH;
-
-	center = pos;
-
-	return act;
+		Idle();
 }
 
 void Rabbit::Idle() {
 	--nutr;
+	last_action = IDLE;
 }
 
 bool Rabbit::Procreate() {
-	move(closest_rabbit);
-
-	Coords direction = ConvToRelat(pos);
-	for (int i = -1; i <= 1; ++i) {
-		for (int j = -1; j <= 1; ++j) {
-			direction += {i, j};
-			if (InBound(direction))
-				if (sight[direction.x][direction.y] == GRASS || sight[direction.x][direction.y] == DIRT) {
-					Rabbit* offspring = new Rabbit(ConvToReal(direction), territory);
-					nutr -= 3;
-					offsprings.push_back(offspring);
-					return true;
-				}
+	bool procreate = false;
+	
+	move(); //reaching partner
+	if ((closest_partner - pos).length() > 1) { //reached partner
+		Coords spot = findSpot(pos); //relative to territory
+		if (spot.x != -1) { //!not found
+			Rabbit* child = new Rabbit(spot, territory);
+			children.push_back(child);
+			nutr -= 2;
+			procreate = true;
+			last_action = PROCREATE;
 		}
 	}
 
-	return false;
+	return procreate;
 }
 
 bool Rabbit::eat() {
-	pos = closest_grass;
-	nutr += 4;
-	return true;
-}
+	bool eat = false;
 
-bool Rabbit::move(Coords direction) {
-	direction = ConvToRelat(direction);
-	for (int i = -1; i <= 1; ++i) {
-		for (int j = -1; j <= 1; ++j) {
-			direction += {i, j};
-			if (InBound(direction))
-				if (sight[direction.x][direction.y] == GRASS || sight[direction.x][direction.y] == DIRT) {
-					pos = ConvToReal(direction);
-					--nutr;
-					return true;
-				}
-		}
+	move(); //reaching food
+	if (isFood(territory[pos])) { //reached food
+		nutr += 4;
+		eat = true;
+		last_action = EAT;
 	}
 
-	return false;
+	return eat;
+}
+
+bool Rabbit::move() {
+	bool move = false;
+
+	for (unsigned i = 0; i < jump_length; ++i) {
+		if (!route.empty()) {
+			Coords::Direction step = route.back(); route.pop_back();
+			Coords next;
+
+			if (step == Coords::UP)
+				next = pos.up();
+			else if (step == Coords::DOWN)
+				next = pos.down();
+			else if (step == Coords::LEFT)
+				next = pos.left();
+			else if (step == Coords::RIGHT)
+				next = pos.right();
+
+			if (isVacant(territory[next])) {
+				pos = next;
+				--nutr;
+				move = true;
+			}
+			else
+				break; //an obstacle is blocking movement or position near partner has been reached
+		}
+		else
+			break;
+	}
+
+	return move;
 }
 
 void Rabbit::Death() {
 	is_dead = true;
+}
+
+bool Rabbit::isFood(Creatures creature) const {
+	return creature == GRASS;
+}
+
+bool Rabbit::isPartner(Creatures creature) const {
+	return creature == RABBIT;
+}
+
+bool Rabbit::isEnemy(Creatures creature) const {
+	return creature == FOX;
+}
+
+bool Rabbit::isHungry() const {
+	return nutr <= 3;
+}
+
+bool Rabbit::isReady() const {
+	return age % 3 == 0 && age >= 3;
+}
+
+bool Rabbit::isScared() const {
+	return (closest_enemy - pos).length() <= 3;
 }
 
 //void Rabbit::See() {

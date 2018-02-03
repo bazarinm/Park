@@ -7,22 +7,41 @@ class Animal :
 	public Creature
 {
 public:
-	Animal(unsigned nutr, Coords pos, const Park& _territory, int FOV);
+	Animal(unsigned nutr, Coords pos, const Park& territory, int FOV);
 protected:
-	bool sex;
-
 	Coords closest_food;
 	Coords closest_partner;
 	Coords closest_enemy;
 
-	void look();
-private:
-	virtual bool eat() = 0;
-	virtual bool move(Coords) = 0;
+	const int FOV;
+	std::vector<std::vector<int>> sight;
+	std::vector<Coords::Direction> route;
 
-	virtual bool isFood(Creatures) = 0;
-	virtual bool isPartner(Creatures) = 0;
-	virtual bool isEnemy(Creatures) = 0;
+	bool seekFood();
+	bool seekPartner();
+	bool seekEnemy();
+
+	bool isVacant(Creatures tile) const override; 
+private:
+	bool sex;
+
+	bool inSight(Coords) const;
+
+	virtual bool eat() = 0;
+	virtual bool move() = 0;
+
+	virtual bool isHungry() const = 0;
+	virtual bool isReady() const = 0;
+	virtual bool isScared() const = 0;
+
+	virtual bool isFood(Creatures) const = 0;
+	virtual bool isPartner(Creatures) const = 0;
+	virtual bool isEnemy(Creatures) const = 0;
+
+	void trace(Coords);
+
+	Coords toReal(Coords) const;
+	Coords toRelative(Coords) const;
 };
 
 #endif
