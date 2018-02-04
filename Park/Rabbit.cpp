@@ -1,8 +1,9 @@
 #include "Rabbit.h"
+#include "Plant.h"
 #include "Park.h"
 
 Rabbit::Rabbit(Coords pos, const Park& territory) : 
-	Animal(3, pos, territory, 4, RABBIT)
+	Animal(3, pos, territory, 7, RABBIT)
 {
 	++rabbit_count;
 }
@@ -114,16 +115,26 @@ void Rabbit::Death() {
 
 //---
 
-bool Rabbit::isFood(Creatures creature) const {
-	return creature == GRASS;
+bool Rabbit::isFood(Park::Tile tile) const {
+	bool is_food = false;
+	if (tile.plant != nullptr)
+		if (tile.plant->getType() == GRASS)
+			is_food = true;
+	return is_food;
 }
 
-bool Rabbit::isPartner(Creatures creature) const {
-	return creature == RABBIT;
+bool Rabbit::isPartner(Park::Tile tile) const {
+	bool is_partner = false;
+	if (tile.animal != nullptr)
+		if (tile.animal->getType() == type &&
+			tile.animal->isReady()/* &&
+			(tile.animal->getSex() ^ sex)*/)
+			is_partner = true;
+	return is_partner;
 }
 
-bool Rabbit::isEnemy(Creatures creature) const {
-	return creature == FOX;
+bool Rabbit::isEnemy(Park::Tile tile) const {
+	return tile.animal->getType() == FOX;
 }
 
 //---

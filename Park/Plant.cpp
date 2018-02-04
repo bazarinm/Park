@@ -2,13 +2,13 @@
 
 
 
-Plant::Plant(unsigned nutr, Coords pos, const Park& territory, Creatures type): 
-	Creature(nutr, pos, territory, type)
+Plant::Plant(unsigned nutr, Coords pos, const Park& territory, Species type): 
+	Creature(nutr, pos, territory, PLANT, type)
 {
 }
 
-bool Plant::isVacant(Creatures pos) const {
-	return pos == DIRT;
+bool Plant::isVacant(Park::Tile tile) const {
+	return tile.animal == nullptr && tile.plant == nullptr;
 }
 
 //Plant::~Plant()

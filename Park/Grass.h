@@ -2,8 +2,9 @@
 #define GRASS_H
 
 #include "Plant.h"
-#include "Park.h"
 #include <vector>
+
+class Park;
 
 class Grass :
 	public Plant

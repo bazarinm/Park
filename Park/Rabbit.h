@@ -2,6 +2,8 @@
 #define RABBIT_H
 
 #include "Animal.h"
+#include "Park.h"
+
 class Rabbit :
 	public Animal
 {
@@ -34,9 +36,9 @@ private:
 	bool isScared() const override;
 	bool isOld() const override;
 
-	bool isFood(Creatures) const override;
-	bool isPartner(Creatures) const override;
-	bool isEnemy(Creatures) const override;
+	bool isFood(Park::Tile) const override;
+	bool isPartner(Park::Tile) const override;
+	bool isEnemy(Park::Tile) const override;
 };
 
 #endif

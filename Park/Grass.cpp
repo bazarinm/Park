@@ -1,6 +1,6 @@
 #include "Grass.h"
 
-
+#include <iostream>
 
 Grass::Grass(Coords pos, const Park& territory): 
 	Plant(6, pos, territory, GRASS)
@@ -35,7 +35,10 @@ bool Grass::Procreate() {
 
 	unsigned dir = 0;
 	for (Coords direction : directions) {
-		if (isVacant(territory[direction])) {
+		if (direction.x == 0 && direction.y == 7) {
+			std::cout << "kek";
+		}
+		if (territory.inBound(direction) && isVacant(territory[direction])) {
 			spots[dir] = direction;
 			++dir;
 		}

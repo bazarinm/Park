@@ -2,13 +2,15 @@
 #define PLANT_H
 
 #include "Creature.h"
+#include "Park.h"
+
 class Plant :
 	public Creature
 {
 public:
-	Plant(unsigned nutr, Coords pos, const Park& _territory, Creatures type);
+	Plant(unsigned nutr, Coords pos, const Park& _territory, Species type);
 protected:
-	bool isVacant(Creatures pos) const override;
+	bool isVacant(Park::Tile pos) const override;
 private:
 	virtual void Photosynthesis() = 0;
 };

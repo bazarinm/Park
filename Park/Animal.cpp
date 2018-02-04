@@ -2,34 +2,15 @@
 
 #include "Park.h"
 
-Animal::Animal(unsigned nutr, Coords pos, const Park& territory, int _FOV, Creatures type):
+Animal::Animal(unsigned nutr, Coords pos, const Park& territory, int _FOV, Species type):
 	FOV(_FOV),
-	Creature(nutr, pos, territory, type)
+	Creature(nutr, pos, territory, ANIMAL, type)
 {
-	/*sight.resize(2 * FOV + 1);
-	for (size_t i = 0; i < 2 * FOV + 1; ++i)
-		sight[i].resize(2 * FOV + 1);*/
 }
 
-//Animal::~Animal() {
-//	//Death();
-//}
-
-//void Animal::look() {
-//	for(int i = -FOV; i <= FOV; ++i)
-//		for (int j = -FOV; j <= FOV; ++j) {
-//			Coords dir = { i, j };
-//			dir += pos;
-//
-//			if (isFood(territory[dir]) && (closest_food - pos) < (dir - pos))
-//				closest_food = dir;
-//			else if (isPartner(territory[dir]) && (closest_partner - pos) < (dir - pos))
-//				closest_partner = dir;
-//			else if (isEnemy(territory[dir]) && (closest_enemy - pos) < (dir - pos))
-//				closest_enemy = dir;
-//		}
-//			
-//}
+bool Animal::getSex() const {
+	return sex;
+}
 
 bool Animal::seekFood() {
 	sight = std::vector<std::vector<int>>(2 * FOV + 1, std::vector<int>(2 * FOV + 1, -2));
@@ -51,7 +32,7 @@ bool Animal::seekFood() {
 
 		for (Coords next_step : next) { //relative to territory
 			Coords relat_next = toRelative(next_step); //relative to sight
-			if (!inSight(relat_next) || next_step == pos)
+			if (!inSight(relat_next) || !territory.inBound(next_step) || next_step == pos)
 				continue;
 
 			if (isFood(territory[next_step])) {
@@ -76,6 +57,7 @@ bool Animal::seekFood() {
 }
 
 void Animal::trace(Coords real_dest) {
+	route.clear();
 	Coords step = toRelative(real_dest);
 	size_t step_n = sight[step.x][step.y];
 
@@ -131,7 +113,7 @@ bool Animal::seekPartner() {
 		for (Coords next_step : next) { //relative to territory
 			Coords relat_next = toRelative(next_step); //relative to sight
 
-			if (!inSight(relat_next) || next_step == pos)
+			if (!inSight(relat_next) || !territory.inBound(next_step) || next_step == pos)
 				continue;
 
 			if (isPartner(territory[next_step])) {
@@ -199,8 +181,8 @@ bool Animal::inSight(Coords pos) const {
 	return pos.x >= 0 && pos.y >= 0 && pos.x < 2*FOV+1 && pos.y < 2*FOV+1;
 }
 
-bool Animal::isVacant(Creatures tile) const {
-	return tile == GRASS || tile == DIRT;
+bool Animal::isVacant(Park::Tile tile) const {
+	return tile.animal == nullptr;
 }
 
 Coords Animal::toReal(Coords relative) const {

@@ -2,6 +2,7 @@
 #define FOX_H
 
 #include "Animal.h"
+
 class Fox :
 	public Animal
 {

@@ -2,8 +2,8 @@
 #include "Park.h"
 
 
-Creature::Creature(unsigned _nutr, Coords _pos, const Park& _territory, const Creatures _type): 
-	nutr(_nutr), pos(_pos), territory(_territory), type(_type), is_dead(false), age(0)
+Creature::Creature(unsigned _nutr, Coords _pos, const Park& _territory, Genus _genus, Species _type): 
+	nutr(_nutr), pos(_pos), territory(_territory), genus(_genus), type(_type), is_dead(false), age(0)
 {
 	
 }
@@ -16,8 +16,12 @@ Coords Creature::GetPos() const {
 	return pos;
 }
 
-Creatures Creature::GetType() const {
+Species Creature::getType() const {
 	return type;
+}
+
+Genus Creature::getGenus() const {
+	return genus;
 }
 
 bool Creature::GetStatus() const {
@@ -38,7 +42,7 @@ Coords Creature::findSpot(Coords center) const {
 	directions[Coords::RIGHT] = center.right();
 
 	for (Coords direction : directions) {
-		if (isVacant(territory[direction])) {
+		if (territory.inBound(direction) && isVacant(territory[direction])) {
 			spot = direction;
 			break;
 		}
