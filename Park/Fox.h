@@ -14,6 +14,7 @@ private:
 	//void Eat() override;
 	//void Move() override;
 	//Fox* Procreate() override;
+	void Death() override;
 };
 
 #endif

@@ -3,11 +3,15 @@
 
 
 Fox::Fox(Coords pos, const Park& territory): 
-	Animal(nutr, pos, territory, 4)
+	Animal(nutr, pos, territory, 7, FOX)
 {
 }
 
 
 Fox::~Fox()
 {
+}
+
+void Fox::Death() {
+
 }

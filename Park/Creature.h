@@ -10,7 +10,8 @@ class Park;
 class Creature
 {
 public:
-	Creature(unsigned nutr, Coords pos, const Park& territory);
+	Creature(unsigned nutr, Coords pos, const Park& territory, Creatures type);
+	virtual ~Creature() = default;
 
 	virtual void Behave() = 0;
 	Action getAction() const;
@@ -20,7 +21,7 @@ public:
 	bool GetStatus() const;
 protected:
 	const Park& territory;
-	Creatures type;
+	const Creatures type;
 
 	Action last_action;
 	unsigned age;

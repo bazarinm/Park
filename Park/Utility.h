@@ -14,7 +14,7 @@ struct Coords {
 
 	int x; int y; 
 
-	float length() const { return sqrt(x^2 + y^2); }
+	double length() const { return sqrt((x*x) + (y*y)); }
 
 	bool operator==(Coords& r) { return x == r.x && y == r.y; } 
 	bool operator!=(Coords& r) { return !(*this == r); }
@@ -24,7 +24,7 @@ struct Coords {
 	Coords operator+(int r) const { return { x + r, y + r }; }
 	Coords operator-(int r) const { return { x - r, y - r }; }
 	void operator+=(const Coords& r) { *this = *this + r; }
-	bool operator<(const Coords& r) { return x ^ 2 + y ^ 2 < (r.x) ^ 2 + (r.y) ^ 2; }
+	bool operator<(const Coords& r) { return (x*x) + (y*y) < (r.x)*(r.x) + (r.y)*(r.y); }
 	bool operator>(const Coords& r) { return !operator<(r); }
 	bool operator==(const Coords& r) { return x == r.x && y == r.y; }
 	bool operator!=(const Coords& r) { return !operator==(r); }

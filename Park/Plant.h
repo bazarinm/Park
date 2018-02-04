@@ -6,7 +6,9 @@ class Plant :
 	public Creature
 {
 public:
-	Plant(unsigned nutr, Coords pos, const Park& _territory, int FOV);
+	Plant(unsigned nutr, Coords pos, const Park& _territory, Creatures type);
+protected:
+	bool isVacant(Creatures pos) const override;
 private:
 	virtual void Photosynthesis() = 0;
 };

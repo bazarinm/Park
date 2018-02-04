@@ -7,7 +7,9 @@ class Animal :
 	public Creature
 {
 public:
-	Animal(unsigned nutr, Coords pos, const Park& territory, int FOV);
+	Animal(unsigned nutr, Coords pos, const Park& territory, int FOV, Creatures type);
+	//~Animal();
+
 protected:
 	Coords closest_food;
 	Coords closest_partner;
@@ -33,6 +35,7 @@ private:
 	virtual bool isHungry() const = 0;
 	virtual bool isReady() const = 0;
 	virtual bool isScared() const = 0;
+	virtual bool isOld() const = 0;
 
 	virtual bool isFood(Creatures) const = 0;
 	virtual bool isPartner(Creatures) const = 0;

@@ -2,16 +2,11 @@
 #include "Park.h"
 
 
-Creature::Creature(unsigned _nutr, Coords _pos, const Park& _territory): 
-	nutr(_nutr), pos(_pos), territory(_territory), is_dead(false), age(0)
+Creature::Creature(unsigned _nutr, Coords _pos, const Park& _territory, const Creatures _type): 
+	nutr(_nutr), pos(_pos), territory(_territory), type(_type), is_dead(false), age(0)
 {
 	
 }
-
-
-//Creature::~Creature()
-//{
-//}
 
 Action Creature::getAction() const {
 	return last_action;
@@ -52,6 +47,6 @@ Coords Creature::findSpot(Coords center) const {
 	return spot;
 }
 
-bool Creature::InBound(Coords pos) const {
-	return pos.x >= 0 && pos.y >= 0 && pos.x <= 2 * FOV && pos.y <= 2 * FOV;
-}
+//bool Creature::InBound(Coords pos) const {
+//	return pos.x >= 0 && pos.y >= 0 && pos.x <= 2 * FOV && pos.y <= 2 * FOV;
+//}

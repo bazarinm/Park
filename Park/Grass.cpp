@@ -3,33 +3,57 @@
 
 
 Grass::Grass(Coords pos, const Park& territory): 
-	Plant(6, pos, territory, 1)
+	Plant(6, pos, territory, GRASS)
 {
-	type = GRASS;
+	++grass_count;
 }
+
+size_t Grass::grass_count = 0;
 
 Grass::~Grass()
 {
-	int a;
+	Death();
 }
 
+size_t Grass::getCount() {
+	return grass_count;
+}
 
 bool Grass::Procreate() {
-	for (int i = -1; i < 2; ++i)
-		for (int j = -1; j < 2; ++j)
-			if (sight[FOV + i][FOV + j] == Creatures::DIRT) {
-				Grass* offspring = new Grass({ pos.x + i, pos.y + j }, territory);
-				children.push_back(offspring);
-				nutr -= 3;
-				return true;
-			}
+	children.clear(); // VERY IMPORTANT!!!!
+	bool procreate = false;
 
-	return false;
+	std::array<Coords, 4> spots;
+	for (unsigned i = 0; i < 4; ++i)
+		spots[i] = { -1, -1 };
+
+	std::array<Coords, 4> directions;
+	directions[Coords::UP] = pos.up();
+	directions[Coords::DOWN] = pos.down();
+	directions[Coords::LEFT] = pos.left();
+	directions[Coords::RIGHT] = pos.right();
+
+	unsigned dir = 0;
+	for (Coords direction : directions) {
+		if (isVacant(territory[direction])) {
+			spots[dir] = direction;
+			++dir;
+		}
+	}
+	
+	for (Coords spot : spots) 
+		if (spot.x != -1) { //!not_found
+			Grass* offspring = new Grass(spot, territory);
+			children.push_back(offspring);
+			procreate = true;
+			last_action = PROCREATE;
+		}
+
+	return procreate;
 }
 
 void Grass::Idle() {
 	++age;
-	return;
 }
 
 void Grass::Photosynthesis() {
@@ -37,27 +61,17 @@ void Grass::Photosynthesis() {
 }
 
 void Grass::Death() {
-	is_dead = true;
+	if (!is_dead) {
+		is_dead = true;
+		--grass_count;
+		last_action = DEATH;
+	}
 }
 
-Action Grass::Behave() {
-	Action act = IDLE;
+void Grass::Behave() {
 	
-	if (!is_dead) {
-		children.clear();
-		sight = territory.GetSight(pos, FOV);
-
-		if (nutr != 0) {
-			Procreate();
-			act = PROCREATE;
-		}
-		else {
-			Death();
-			act = DEATH;
-		}
-	}
+	if (age <= 4)
+		Procreate();
 	else
-		act = DEATH;
-
-	return act;
+		Death();
 }
