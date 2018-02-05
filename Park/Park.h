@@ -15,7 +15,7 @@ const int HEIGHT = 10;
 class Park
 {
 public:
-	struct Tile { Plant* plant; Animal* animal; };
+	struct Tile { const Creature* plant; const Creature* animal; };
 	using Field = std::array<std::array<Tile, WIDTH>, HEIGHT>;
 
 	Park();

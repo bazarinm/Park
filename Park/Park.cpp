@@ -22,9 +22,9 @@ void Park::Add(Creature* c) {
 	Genus genus = c->getGenus();
 
 	if (genus == PLANT)
-		field[pos.x][pos.y].plant = dynamic_cast<Plant*>(c);
+		field[pos.x][pos.y].plant = c;
 	else if (genus == ANIMAL)
-		field[pos.x][pos.y].animal = dynamic_cast<Animal*>(c);
+		field[pos.x][pos.y].animal =c;
 
 	creatures.push(c);
 }
@@ -58,9 +58,8 @@ void Park::Move(Creature* c, Coords old_pos) {
 	Genus genus = c->getGenus();
 
 	if (genus == ANIMAL && pos != old_pos) {
-		Animal* t = field[old_pos.x][old_pos.y].animal;
 		field[old_pos.x][old_pos.y].animal = nullptr;
-		field[pos.x][pos.y].animal = t;
+		field[pos.x][pos.y].animal = c;
 	}
 }
 
@@ -78,7 +77,7 @@ void Park::Eat(Creature* c) {
 			field[pos.x][pos.y].animal = nullptr;
 		}
 
-		field[pos.x][pos.y].animal = dynamic_cast<Animal*>(c);
+		field[pos.x][pos.y].animal = c;
 	}
 }
 
@@ -105,10 +104,9 @@ void Park::Simulation() {
 				continue;
 			}
 
-			if (cycle_count == 20 && i == 0 )
+			if (cycle_count == 47 && i == 9 )
 				std::cout << i << std::endl;
 			Coords old_pos = current_creature->GetPos();
-			//48
 			current_creature->Behave();
 			Action last_action = current_creature->getAction();
 

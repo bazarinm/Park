@@ -9,6 +9,7 @@ class Plant :
 {
 public:
 	Plant(unsigned nutr, Coords pos, const Park& _territory, Species type);
+	virtual ~Plant() = default;
 protected:
 	bool isVacant(Park::Tile pos) const override;
 private:

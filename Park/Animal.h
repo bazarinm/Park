@@ -9,7 +9,7 @@ class Animal :
 {
 public:
 	Animal(unsigned nutr, Coords pos, const Park& territory, int FOV, Species type);
-	//~Animal();
+	virtual ~Animal() = default;
 
 	bool getSex() const;
 	virtual bool isReady() const = 0;

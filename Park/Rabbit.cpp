@@ -48,7 +48,7 @@ bool Rabbit::Procreate() {
 	if ((closest_partner - pos).length() < 2) { //reached partner
 		Coords spot = findSpot(pos); //relative to territory
 		if (spot.x != -1) { //!not found
-			Rabbit* child = new Rabbit(spot, territory);
+			Creature* child = new Rabbit(spot, territory);
 			children.push_back(child);
 			nutr -= 2;
 			procreate = true;
@@ -125,9 +125,11 @@ bool Rabbit::isFood(Park::Tile tile) const {
 
 bool Rabbit::isPartner(Park::Tile tile) const {
 	bool is_partner = false;
-	if (tile.animal != nullptr)
-		if (tile.animal->getType() == type &&
-			tile.animal->isReady()/* &&
+	//const Animal* p = dynamic_cast<const Animal*>(tile.animal);
+	const Creature* p = tile.animal;
+	if (p != nullptr)
+		if (p->getType() == type /*&&
+			p->isReady() &&
 			(tile.animal->getSex() ^ sex)*/)
 			is_partner = true;
 	return is_partner;
