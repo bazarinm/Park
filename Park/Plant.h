@@ -10,10 +10,11 @@ class Plant :
 public:
 	Plant(unsigned nutr, Coords pos, const Park& _territory, Species type);
 	virtual ~Plant() = default;
+
 protected:
-	bool isVacant(Park::Tile pos) const override;
+	bool isVacant(Park::Tile pos) const final;
 private:
-	virtual void Photosynthesis() = 0;
+	virtual void photosynthesis() = 0;
 };
 
 #endif

@@ -13,15 +13,15 @@ public:
 	Grass(Coords pos, const Park& territory);
 	~Grass();
 
-	void Behave() override;
+	void behave() final;
 	static size_t getCount();
-
 private:
 	static size_t grass_count;
-	void Idle() override;
-	void Death() override;
-	bool Procreate() override;
-	void Photosynthesis() override;
+
+	void idle() final;
+	void death() final;
+	bool procreate() final;
+	void photosynthesis() final;
 };
 
 #endif

@@ -12,15 +12,16 @@ size_t Grass::grass_count = 0;
 
 Grass::~Grass()
 {
-	Death();
+	//std::cout << "test";
+	death();
 }
 
 size_t Grass::getCount() {
 	return grass_count;
 }
 
-bool Grass::Procreate() {
-	children.clear(); // VERY IMPORTANT!!!!
+bool Grass::procreate() {
+	offsprings.clear(); // VERY IMPORTANT!!!!
 	bool procreate = false;
 
 	std::array<Coords, 4> spots;
@@ -28,16 +29,13 @@ bool Grass::Procreate() {
 		spots[i] = { -1, -1 };
 
 	std::array<Coords, 4> directions;
-	directions[Coords::UP] = pos.up();
-	directions[Coords::DOWN] = pos.down();
-	directions[Coords::LEFT] = pos.left();
-	directions[Coords::RIGHT] = pos.right();
+	directions[Coords::UP] = position.up();
+	directions[Coords::DOWN] = position.down();
+	directions[Coords::LEFT] = position.left();
+	directions[Coords::RIGHT] = position.right();
 
 	unsigned dir = 0;
 	for (Coords direction : directions) {
-		if (direction.x == 0 && direction.y == 7) {
-			std::cout << "kek";
-		}
 		if (territory.inBound(direction) && isVacant(territory[direction])) {
 			spots[dir] = direction;
 			++dir;
@@ -47,7 +45,7 @@ bool Grass::Procreate() {
 	for (Coords spot : spots) 
 		if (spot.x != -1) { //!not_found
 			Grass* offspring = new Grass(spot, territory);
-			children.push_back(offspring);
+			offsprings.push_back(offspring);
 			procreate = true;
 			last_action = PROCREATE;
 		}
@@ -55,15 +53,15 @@ bool Grass::Procreate() {
 	return procreate;
 }
 
-void Grass::Idle() {
+void Grass::idle() {
 	++age;
 }
 
-void Grass::Photosynthesis() {
-	++nutr;
+void Grass::photosynthesis() {
+	++nutrients;
 }
 
-void Grass::Death() {
+void Grass::death() {
 	if (!is_dead) {
 		is_dead = true;
 		--grass_count;
@@ -71,10 +69,12 @@ void Grass::Death() {
 	}
 }
 
-void Grass::Behave() {
+void Grass::behave() {
 	
-	if (age <= 4)
-		Procreate();
+	if (age <= 10)
+		procreate();
 	else
-		Death();
+		death();
+
+	//++age;
 }

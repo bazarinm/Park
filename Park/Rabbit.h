@@ -8,37 +8,34 @@ class Rabbit :
 	public Animal
 {
 public:
-	const unsigned _FOV = 7;
 	const unsigned JUMP_LENGTH = 2;
-	const unsigned MAX_AGE = 10;
-	const unsigned PERIOD = 3;
+	const unsigned MAX_AGE = 11;
+	const unsigned PERIOD = 2;
 	const unsigned READY_AGE = 3;
 
 	Rabbit(Coords pos, const Park& territory);
 	~Rabbit();
 
-	void Behave() override;
-
-	const unsigned jump_length = 2;
+	void behave() final;
 
 	static size_t getCount();
 private:
 	static size_t rabbit_count;
 
-	bool eat() override;
-	void Idle() override;
-	bool move() override;
-	void Death() override;
-	bool Procreate() override;
+	bool eat() final;
+	void idle() final;
+	bool move(Aim) final;
+	void death() final;
+	bool procreate() final;
 
-	bool isHungry() const override;
-	bool isReady() const override;
-	bool isScared() const override;
-	bool isOld() const override;
+	bool isHungry() const final;
+	bool isReady() const final;
+	bool isScared() const final;
+	bool isOld() const final;
 
-	bool isFood(Park::Tile) const override;
-	bool isPartner(Park::Tile) const override;
-	bool isEnemy(Park::Tile) const override;
+	bool isFood(Park::Tile) const final;
+	bool isPartner(Park::Tile) const final;
+	bool isEnemy(Park::Tile) const final;
 };
 
 #endif

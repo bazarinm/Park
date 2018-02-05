@@ -18,20 +18,20 @@ Park::Park()
 //}
 
 void Park::Add(Creature* c) {
-	Coords pos = c->GetPos();
-	Genus genus = c->getGenus();
+	Coords pos = c->getPos();
+	Genuses genus = c->getGenus();
 
 	if (genus == PLANT)
 		field[pos.x][pos.y].plant = c;
 	else if (genus == ANIMAL)
-		field[pos.x][pos.y].animal =c;
+		field[pos.x][pos.y].animal = c;
 
 	creatures.push(c);
 }
 
 void Park::Remove(Creature* c) {
-	Coords pos = c->GetPos();
-	Genus genus = c->getGenus();
+	Coords pos = c->getPos();
+	Genuses genus = c->getGenus();
 
 	if (genus == PLANT)
 		field[pos.x][pos.y].plant = nullptr;
@@ -54,8 +54,8 @@ Park::Tile& Park::operator[](Coords pos) {
 }
 
 void Park::Move(Creature* c, Coords old_pos) {
-	Coords pos = c->GetPos();
-	Genus genus = c->getGenus();
+	Coords pos = c->getPos();
+	Genuses genus = c->getGenus();
 
 	if (genus == ANIMAL && pos != old_pos) {
 		field[old_pos.x][old_pos.y].animal = nullptr;
@@ -64,11 +64,11 @@ void Park::Move(Creature* c, Coords old_pos) {
 }
 
 void Park::Eat(Creature* c) {
-	Coords pos = c->GetPos();
-	Genus genus = c->getGenus();
+	Coords pos = c->getPos();
+	Genuses genus = c->getGenus();
 
 	if (genus == ANIMAL) {
-		Species type = c->getType();
+		Species type = c->getSpecies();
 		if (type == RABBIT) {
 			//delete field[pos.x][pos.y].plant;
 			field[pos.x][pos.y].plant = nullptr;
@@ -82,8 +82,8 @@ void Park::Eat(Creature* c) {
 }
 
 bool Park::isEaten(Creature* c) {
-	Coords pos = c->GetPos();
-	Species type = c->getType();
+	Coords pos = c->getPos();
+	Species type = c->getSpecies();
 
 	return ((type == GRASS && field[pos.x][pos.y].plant == nullptr) ||
 			(type == RABBIT && field[pos.x][pos.y].animal == nullptr) ||
@@ -104,16 +104,14 @@ void Park::Simulation() {
 				continue;
 			}
 
-			if (cycle_count == 47 && i == 9 )
-				std::cout << i << std::endl;
-			Coords old_pos = current_creature->GetPos();
-			current_creature->Behave();
+			Coords old_pos = current_creature->getPos();
+			current_creature->behave();
 			Action last_action = current_creature->getAction();
 
 			Move(current_creature, old_pos);
 
 			if (last_action == PROCREATE) {
-				std::vector<Creature*> offsprings = current_creature->GetOffs();
+				std::vector<Creature*> offsprings = current_creature->getOffsprings();
 				for (Creature* creature : offsprings) 
 					Add(creature);
 			}
@@ -148,14 +146,14 @@ void Park::Draw() const {
 	std::cout.flush();
 	COORD coord = { (SHORT)0, (SHORT)0 };
 	SetConsoleCursorPosition(hOut, coord);
-
+	//Sleep(200);
 	for (size_t i = 0; i < HEIGHT; ++i) {
 		std::cout << std::endl;
 
 		for (size_t j = 0; j < WIDTH; ++j) {
 			Tile tile = field[i][j];
 			if (tile.animal != nullptr) {
-				Species type = tile.animal->getType();
+				Species type = tile.animal->getSpecies();
 				if (type == RABBIT)
 					std::cout << "R";
 				else if (type == FOX)

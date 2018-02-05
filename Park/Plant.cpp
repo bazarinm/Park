@@ -11,6 +11,3 @@ bool Plant::isVacant(Park::Tile tile) const {
 	return tile.animal == nullptr && tile.plant == nullptr;
 }
 
-//Plant::~Plant()
-//{
-//}

@@ -12,56 +12,97 @@ bool Animal::getSex() const {
 	return sex;
 }
 
-bool Animal::seekFood() {
-	sight = std::vector<std::vector<int>>(2 * FOV + 1, std::vector<int>(2 * FOV + 1, -2));
-	
-	sight[FOV][FOV] = 0;
+void Animal::scan() {
+	sight = std::vector<std::vector<int>>(2 * FOV + 1, std::vector<int>(2 * FOV + 1, 0));
+
+	sight[FOV][FOV] = 1; 
 	std::queue<Coords> steps;
-	steps.push(pos);
+	steps.push(position);
 
-	bool found = false;
-	while (!steps.empty() && !found) {
+	bool food_found = false, 
+		 partner_found = false, 
+		 enemy_found = false,
+		 all_found = false;
+
+	size_t food_proximity, partner_proximity, enemy_proximity;
+
+	while (!steps.empty() && !all_found) {
 		Coords step = steps.front(); steps.pop(); //relative to territory
-		Coords relat_step = toRelative(step); //relative to sight
+		Coords relative_step = toRelative(step); //relative to sight
 
-		std::array<Coords, 4> next;
-		next[Coords::UP] = step.up();
-		next[Coords::DOWN] = step.down();
-		next[Coords::LEFT] = step.left();
-		next[Coords::RIGHT] = step.right();
+		std::array<Coords, 4> next_steps;
+		next_steps[Coords::UP] = step.up();
+		next_steps[Coords::DOWN] = step.down();
+		next_steps[Coords::LEFT] = step.left();
+		next_steps[Coords::RIGHT] = step.right();
 
-		for (Coords next_step : next) { //relative to territory
-			Coords relat_next = toRelative(next_step); //relative to sight
-			if (!inSight(relat_next) || !territory.inBound(next_step) || next_step == pos)
+		for (Coords next_step : next_steps) { //relative to territory
+			Coords relative_next = toRelative(next_step); //relative to sight
+
+			if (!territory.inBound(next_step) || !inSight(relative_next) || next_step == position)
 				continue;
 
-			if (isFood(territory[next_step])) {
-				sight[relat_next.x][relat_next.y] = sight[relat_step.x][relat_step.y] + 1;
-				closest_food = next_step; //relative to territory
-				found = true;
+			if (!food_found && isFood(territory[next_step])) {
+				food_proximity = sight[relative_step.x][relative_step.y] + 1;
+				closest_food = next_step;
+				food_found = true;
 			}
-			else if (isVacant(territory[next_step]))
-				if (sight[relat_next.x][relat_next.y] == -2) {
-					sight[relat_next.x][relat_next.y] = sight[relat_step.x][relat_step.y] + 1;
-					steps.push(next_step);
-				}
+			else if (!partner_found && isPartner(territory[next_step])) {
+				partner_proximity = sight[relative_step.x][relative_step.y] + 1;
+				closest_partner = next_step;
+				partner_found = true;
+			}
+			else if (!enemy_found && isEnemy(territory[next_step])) {
+				enemy_proximity = sight[relative_step.x][relative_step.y] + 1;
+				closest_enemy = next_step;
+				enemy_found = true;
+			}
+			
+			if (isVacant(territory[next_step]) && sight[relative_next.x][relative_next.y] == 0) {
+				sight[relative_next.x][relative_next.y] = sight[relative_step.x][relative_step.y] + 1;
+				steps.push(next_step);
+			}
 
-			if (found)
+			all_found = food_found && partner_found && enemy_found;
+
+			if (all_found)
 				break;
 		}
 	}
 
-	if (found)
-		trace(closest_food);
-	return found;
+	if (food_found)
+		trace(FOOD, food_proximity);
+	if (partner_found)
+		trace(PARTNER, partner_proximity);
+	if (enemy_found)
+		trace(ENEMY, enemy_proximity);
+	return;
 }
 
-void Animal::trace(Coords real_dest) {
-	route.clear();
-	Coords step = toRelative(real_dest);
-	size_t step_n = sight[step.x][step.y];
+void Animal::trace(Aim aim, size_t proximity) {
+	Coords destination;
+	std::vector<Coords::Direction>* path = nullptr;
+	if (aim == FOOD) {
+		destination = closest_food;
+		path = &route_to_food;
+	}
+	else if (aim == PARTNER) {
+		destination = closest_partner;
+		path = &route_to_partner;
+	}
+	else if (aim == ENEMY) {
+		destination = closest_enemy;
+		path = &route_to_enemy;
+	}
+	else
+		return;
 
-	while (step_n != 0) {
+	path->clear(); // VERY IMPORTANT!
+
+	Coords step = toRelative(destination);
+	size_t step_n = proximity;
+
+	while (step_n != 1) {
 		std::array<Coords, 4> steps;
 		steps[Coords::UP] = step.up();
 		steps[Coords::DOWN] = step.down();
@@ -70,20 +111,23 @@ void Animal::trace(Coords real_dest) {
 
 		unsigned dir = 0;
 		for (Coords next : steps) {
-			if (inSight(next)) {
-				if (sight[next.x][next.y] == step_n - 1) {
-					if (dir == Coords::UP)
-						route.push_back(Coords::DOWN);
-					else if (dir == Coords::DOWN)
-						route.push_back(Coords::UP);
-					else if (dir == Coords::LEFT)
-						route.push_back(Coords::RIGHT);
-					else if (dir == Coords::RIGHT)
-						route.push_back(Coords::LEFT);
+			if (!territory.inBound(toReal(next)) || !inSight(next)) {
+				++dir;
+				continue;
+			}
 
-					step = next;
-					break;
-				}
+			if (sight[next.x][next.y] == step_n - 1) {
+				if (dir == Coords::UP)
+					path->push_back(Coords::DOWN);
+				else if (dir == Coords::DOWN)
+					path->push_back(Coords::UP);
+				else if (dir == Coords::LEFT)
+					path->push_back(Coords::RIGHT);
+				else if (dir == Coords::RIGHT)
+					path->push_back(Coords::LEFT);
+
+				step = next;
+				break;
 			}
 
 			++dir;
@@ -92,103 +136,22 @@ void Animal::trace(Coords real_dest) {
 	}
 }
 
-bool Animal::seekPartner() {
-	sight = std::vector<std::vector<int>>(2 * FOV + 1, std::vector<int>(2 * FOV + 1, -2));
-
-	sight[FOV][FOV] = 0;
-	std::queue<Coords> steps;
-	steps.push(pos);
-
-	bool found = false;
-	while (!steps.empty() && !found) {
-		Coords step = steps.front(); steps.pop(); //relative to territory
-		Coords relat_step = toRelative(step); //relative to sight
-
-		std::array<Coords, 4> next;
-		next[Coords::UP] = step.up();
-		next[Coords::DOWN] = step.down();
-		next[Coords::LEFT] = step.left();
-		next[Coords::RIGHT] = step.right();
-
-		for (Coords next_step : next) { //relative to territory
-			Coords relat_next = toRelative(next_step); //relative to sight
-
-			if (!inSight(relat_next) || !territory.inBound(next_step) || next_step == pos)
-				continue;
-
-			if (isPartner(territory[next_step])) {
-				sight[relat_next.x][relat_next.y] = sight[relat_step.x][relat_step.y] + 1;
-				closest_partner = next_step; //relative to territory
-				found = true;
-			}
-			else if (isVacant(territory[next_step])) 
-				if (sight[relat_next.x][relat_next.y] == -2) {
-					sight[relat_next.x][relat_next.y] = sight[relat_step.x][relat_step.y] + 1;
-					steps.push(next_step);
-				}
-
-			if (found)
-				break;
-		}
-	}
-
-	if (found)
-		trace(closest_partner);
-	return found;
-}
-
-bool Animal::seekEnemy() {
-	sight = std::vector<std::vector<int>>(2 * FOV + 1, std::vector<int>(2 * FOV + 1));
-
-	std::queue<Coords> steps;
-	steps.push(pos);
-
-	bool found = false;
-	while (!steps.empty() && !found) {
-		Coords step = steps.front(); steps.pop(); //relative to territory
-		Coords relat_step = toRelative(step); //relative to sight
-
-		std::array<Coords, 4> next;
-		next[Coords::UP] = step.up();
-		next[Coords::DOWN] = step.down();
-		next[Coords::LEFT] = step.left();
-		next[Coords::RIGHT] = step.right();
-
-		for (Coords next_step : next) { //relative to territory
-			Coords relat_next = toRelative(next_step); //relative to sight
-			if (!inSight(relat_step))
-				continue;
-
-			if (sight[relat_next.x][relat_next.y] == 0 && next_step != pos) {
-				if (isFood(territory[next_step])) {
-					closest_food = next_step; //relative to territory
-					found = true;
-				}
-				else if (isVacant(territory[next_step]))
-					sight[relat_next.x][relat_next.y] = sight[relat_step.x][relat_step.y] + 1;
-
-				steps.push(next_step);
-			}
-		}
-	}
-
-	trace(closest_enemy);
-	return found;
-}
 
 
 bool Animal::inSight(Coords pos) const {
-	return pos.x >= 0 && pos.y >= 0 && pos.x < 2*FOV+1 && pos.y < 2*FOV+1;
+	return pos.x >= 0 && pos.y >= 0 && pos.x < 2 * FOV+1 && pos.y < 2 * FOV + 1;
 }
 
 bool Animal::isVacant(Park::Tile tile) const {
 	return tile.animal == nullptr;
 }
 
+
+
 Coords Animal::toReal(Coords relative) const {
-	return pos - FOV + relative;
+	return position - FOV + relative;
 }
 
 Coords Animal::toRelative(Coords real) const {
-	return real + FOV - pos;
+	return real + FOV - position;
 }

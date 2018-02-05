@@ -2,34 +2,34 @@
 #include "Park.h"
 
 
-Creature::Creature(unsigned _nutr, Coords _pos, const Park& _territory, Genus _genus, Species _type): 
-	nutr(_nutr), pos(_pos), territory(_territory), genus(_genus), type(_type), is_dead(false), age(0)
+Creature::Creature(unsigned _nutr, Coords _pos, const Park& _territory, Genuses _genus, Species _type): 
+	nutrients(_nutr), position(_pos), territory(_territory), genus(_genus), species(_type), is_dead(false), age(0)
 {
-	
+	last_action = IDLE;
 }
 
 Action Creature::getAction() const {
 	return last_action;
 }
 
-Coords Creature::GetPos() const {
-	return pos;
+Coords Creature::getPos() const {
+	return position;
 }
 
-Species Creature::getType() const {
-	return type;
+Species Creature::getSpecies() const {
+	return species;
 }
 
-Genus Creature::getGenus() const {
+Genuses Creature::getGenus() const {
 	return genus;
 }
 
-bool Creature::GetStatus() const {
+bool Creature::isDead() const {
 	return is_dead;
 }
 
-std::vector<Creature*> Creature::GetOffs() const {
-	return children;
+std::vector<Creature*> Creature::getOffsprings() const {
+	return offsprings;
 }
 
 Coords Creature::findSpot(Coords center) const {

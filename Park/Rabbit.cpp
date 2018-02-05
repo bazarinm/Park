@@ -1,9 +1,8 @@
 #include "Rabbit.h"
-#include "Plant.h"
 #include "Park.h"
 
 Rabbit::Rabbit(Coords pos, const Park& territory) : 
-	Animal(3, pos, territory, 7, RABBIT)
+	Animal(6, pos, territory, 5, RABBIT)
 {
 	++rabbit_count;
 }
@@ -11,7 +10,7 @@ Rabbit::Rabbit(Coords pos, const Park& territory) :
 size_t Rabbit::rabbit_count = 0;
 
 Rabbit::~Rabbit() {
-	Death();
+	death();
 }
 
 size_t Rabbit::getCount() {
@@ -20,78 +19,59 @@ size_t Rabbit::getCount() {
 
 //---
 
-void Rabbit::Behave() {
-	if (nutr == 0 || isOld())
-		Death();
-	else if (isHungry() && seekFood()) //hungry and found food nearby
+void Rabbit::behave() {
+	last_action = IDLE;
+	scan();
+
+	if (nutrients == 0 || isOld())
+		death();
+	else if (isHungry()) //hungry and found food nearby
 		eat();
-	else if (isReady() && seekPartner()) //ready and found partner nearby
-		Procreate();
+	else if (isReady()) //ready and found partner nearby
+		procreate();
 	else
-		Idle();
+		idle();
 
 	++age;
 }
 
 //---
 
-void Rabbit::Idle() {
-	--nutr;
+void Rabbit::idle() {
+	--nutrients;
 	last_action = IDLE;
 }
 
-bool Rabbit::Procreate() {
-	children.clear(); // VERY IMPORTANT!!!!
-	bool procreate = false;
-	
-	move(); //reaching partner
-	if ((closest_partner - pos).length() < 2) { //reached partner
-		Coords spot = findSpot(pos); //relative to territory
-		if (spot.x != -1) { //!not found
-			Creature* child = new Rabbit(spot, territory);
-			children.push_back(child);
-			nutr -= 2;
-			procreate = true;
-			last_action = PROCREATE;
-		}
-	}
-
-	return procreate;
-}
-
-bool Rabbit::eat() {
-	bool eat = false;
-
-	move(); //reaching food
-	if (isFood(territory[pos])) { //reached food
-		nutr += 4;
-		eat = true;
-		last_action = EAT;
-	}
-
-	return eat;
-}
-
-bool Rabbit::move() {
+bool Rabbit::move(Aim aim) {
 	bool move = false;
 
-	for (unsigned i = 0; i < jump_length; ++i) {
-		if (!route.empty()) {
-			Coords::Direction step = route.back(); route.pop_back();
-			Coords next;
+	std::vector<Coords::Direction>* path;
+	if (aim == FOOD)
+		path = &route_to_food;
+	else if (aim == PARTNER)
+		path = &route_to_partner;
+	else if (aim == ENEMY)
+		path = &route_to_enemy;
+	else
+		return move;
 
+	for (unsigned i = 0; i < JUMP_LENGTH; ++i) {
+		if (!path->empty()) {
+			Coords::Direction step = path->back(); path->pop_back();
+
+			Coords next;
 			if (step == Coords::UP)
-				next = pos.up();
+				next = position.up();
 			else if (step == Coords::DOWN)
-				next = pos.down();
+				next = position.down();
 			else if (step == Coords::LEFT)
-				next = pos.left();
+				next = position.left();
 			else if (step == Coords::RIGHT)
-				next = pos.right();
+				next = position.right();
 
 			if (isVacant(territory[next])) {
-				pos = next;
-				--nutr;
+				position = next;
+				--nutrients;
 				last_action = MOVE;
 				move = true;
 			}
@@ -99,58 +79,89 @@ bool Rabbit::move() {
 				break; //an obstacle is blocking movement or position near partner has been reached
 		}
 		else
-			break;
+			break; //no route to follow
 	}
 
 	return move;
 }
 
-void Rabbit::Death() {
-	if (!is_dead) {
+bool Rabbit::procreate() {
+	offsprings.clear(); // VERY IMPORTANT!!!!
+	bool procreate = false;
+	
+	if ((closest_partner - position).length() < 2) { //near partner
+		Coords spot = findSpot(position); //relative to territory
+		if (spot.x != -1) { //!not found
+			Rabbit* child = new Rabbit(spot, territory);
+			offsprings.push_back(child);
+			nutrients -= 2;
+			procreate = true;
+			last_action = PROCREATE;
+		}
+	}
+	else
+		move(PARTNER); //go to partner
+
+	return procreate;
+}
+
+bool Rabbit::eat() {
+	bool eat = false;
+
+	if (!isFood(territory[position]))  //have not reached food
+		move(FOOD); //go to food
+	
+	if (isFood(territory[position])) { //if reached food
+		nutrients += 4;
+		eat = true;
+		last_action = EAT;
+	}
+
+	return eat;
+}
+
+void Rabbit::death() {
+	if (!is_dead) { 
 		is_dead = true;
 		--rabbit_count;
-		last_action = DEATH;
 	}
+	last_action = DEATH;
 }
 
 //---
 
 bool Rabbit::isFood(Park::Tile tile) const {
-	bool is_food = false;
-	if (tile.plant != nullptr)
-		if (tile.plant->getType() == GRASS)
-			is_food = true;
-	return is_food;
+	return tile.plant != nullptr && tile.plant->getSpecies() == GRASS;
 }
 
 bool Rabbit::isPartner(Park::Tile tile) const {
 	bool is_partner = false;
-	//const Animal* p = dynamic_cast<const Animal*>(tile.animal);
-	const Creature* p = tile.animal;
-	if (p != nullptr)
-		if (p->getType() == type /*&&
-			p->isReady() &&
-			(tile.animal->getSex() ^ sex)*/)
-			is_partner = true;
+	if (tile.animal != nullptr) {
+		const Animal* p = static_cast<const Animal*>(tile.animal);
+		//const Creature* p = tile.animal;
+		//if (p != nullptr) 
+			if (p->getSpecies() == species && p->isReady())
+				is_partner = true;
+	}
 	return is_partner;
 }
 
 bool Rabbit::isEnemy(Park::Tile tile) const {
-	return tile.animal->getType() == FOX;
+	return tile.animal != nullptr && tile.animal->getSpecies() == FOX;
 }
 
 //---
 
 bool Rabbit::isHungry() const {
-	return nutr <= 3;
+	return nutrients <= 3;
 }
 
 bool Rabbit::isReady() const {
-	return age % PERIOD == 0 && age >= READY_AGE;
+	return age % PERIOD == 0 && age >= READY_AGE && !isHungry();
 }
 
 bool Rabbit::isScared() const {
-	return (closest_enemy - pos).length() <= 3;
+	return (closest_enemy - position).length() <= 3;
 }
 
 bool Rabbit::isOld() const {

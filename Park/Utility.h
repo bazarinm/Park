@@ -6,7 +6,7 @@
 #include <vector>
 
 enum Species { BARRIER, DIRT, GRASS, RABBIT, FOX };
-enum Genus { PLANT, ANIMAL };
+enum Genuses { PLANT, ANIMAL };
 
 enum Action { MOVE, EAT, PROCREATE, IDLE, PHOTOSYNTH, DEATH };
 

@@ -8,35 +8,37 @@
 class Creature
 {
 public:
-	Creature(unsigned nutr, Coords pos, const Park& territory, Genus genus, Species type);
+	Creature(unsigned nutr, Coords pos, const Park& territory, Genuses genus, Species type);
 	virtual ~Creature() = default;
 
-	virtual void Behave() = 0;
+	virtual void behave() = 0;
+
 	Action getAction() const;
-	Coords GetPos() const;
-	std::vector<Creature*> GetOffs() const;
-	Species getType() const;
-	Genus getGenus() const;
-	bool GetStatus() const;
+	Coords getPos() const;
+	std::vector<Creature*> getOffsprings() const;
+	Species getSpecies() const;
+	Genuses getGenus() const;
+	bool isDead() const;
 protected:
 	const Park& territory;
-	const Genus genus;
-	const Species type;
+	const Genuses genus;
+	const Species species;
 
 	Action last_action;
 	unsigned age;
-	unsigned nutr;
-	Coords pos;
-	std::vector<Creature*> children;
+	unsigned nutrients;
+	Coords position;
+	std::vector<Creature*> offsprings;
 	bool is_dead;
 
 	virtual bool isVacant(Park::Tile tile) const = 0;
 	Coords findSpot(Coords pos) const;
-private:
-	virtual void Idle() = 0;
-	virtual bool Procreate() = 0;
-	virtual void Death() = 0;
 
+	virtual void idle() = 0;
+	virtual bool procreate() = 0;
+	virtual void death() = 0;
+private:
+	//
 };
 
 #endif

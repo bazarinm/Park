@@ -9,13 +9,20 @@ class Creature;
 class Plant;
 class Animal;
 
-const int WIDTH = 10;
-const int HEIGHT = 10;
+const int WIDTH = 32;
+const int HEIGHT = 32;
 
 class Park
 {
 public:
-	struct Tile { const Creature* plant; const Creature* animal; };
+	struct Tile {
+		Tile() : plant(nullptr), animal(nullptr) {};
+		Tile(Creature* a, Creature* b) : plant(a), animal(b) {};
+
+		const Creature* plant; 
+		const Creature* animal; 
+	};
+
 	using Field = std::array<std::array<Tile, WIDTH>, HEIGHT>;
 
 	Park();
@@ -30,9 +37,9 @@ public:
 	bool inBound(Coords) const;
 private:
 	Field field;
-	void Move(Creature* c, Coords old_pos);
-	void Eat(Creature* c);
-	bool isEaten(Creature* c);
+	void Move(Creature*, Coords old_pos);
+	void Eat(Creature*);
+	bool isEaten(Creature*);
 	std::queue<Creature*> creatures;
 	Tile& operator[](Coords);
 };
