@@ -13,6 +13,9 @@ bool Animal::getSex() const {
 }
 
 void Animal::scan() {
+	route_to_food.clear();
+	route_to_partner.clear();
+	route_to_enemy.clear();
 	sight = std::vector<std::vector<int>>(2 * FOV + 1, std::vector<int>(2 * FOV + 1, 0));
 
 	sight[FOV][FOV] = 1; 

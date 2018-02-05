@@ -11,7 +11,7 @@ public:
 	enum Aim { FOOD, PARTNER, ENEMY };
 
 	Animal(unsigned nutr, Coords pos, const Park& territory, int FOV, Species type);
-	virtual ~Animal() = default;
+	//virtual ~Animal() = default;
 
 	bool getSex() const;
 	virtual bool isReady() const = 0;

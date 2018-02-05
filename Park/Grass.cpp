@@ -12,7 +12,6 @@ size_t Grass::grass_count = 0;
 
 Grass::~Grass()
 {
-	//std::cout << "test";
 	death();
 }
 

@@ -137,7 +137,7 @@ bool Rabbit::isFood(Park::Tile tile) const {
 bool Rabbit::isPartner(Park::Tile tile) const {
 	bool is_partner = false;
 	if (tile.animal != nullptr) {
-		const Animal* p = static_cast<const Animal*>(tile.animal);
+		const Animal* p = dynamic_cast<const Animal*>(tile.animal);
 		//const Creature* p = tile.animal;
 		//if (p != nullptr) 
 			if (p->getSpecies() == species && p->isReady())
