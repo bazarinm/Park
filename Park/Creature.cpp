@@ -50,7 +50,3 @@ Coords Creature::findSpot(Coords center) const {
 
 	return spot;
 }
-
-//bool Creature::InBound(Coords pos) const {
-//	return pos.x >= 0 && pos.y >= 0 && pos.x <= 2 * FOV && pos.y <= 2 * FOV;
-//}

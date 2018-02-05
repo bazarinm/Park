@@ -15,7 +15,8 @@ bool Animal::getSex() const {
 void Animal::scan() {
 	route_to_food.clear();
 	route_to_partner.clear();
-	route_to_enemy.clear();
+	route_to_enemy.clear(); //VERY IMPORTANT!
+
 	sight = std::vector<std::vector<int>>(2 * FOV + 1, std::vector<int>(2 * FOV + 1, 0));
 
 	sight[FOV][FOV] = 1; 
@@ -100,8 +101,6 @@ void Animal::trace(Aim aim, size_t proximity) {
 	else
 		return;
 
-	path->clear(); // VERY IMPORTANT!
-
 	Coords step = toRelative(destination);
 	size_t step_n = proximity;
 
@@ -142,7 +141,7 @@ void Animal::trace(Aim aim, size_t proximity) {
 
 
 bool Animal::inSight(Coords pos) const {
-	return pos.x >= 0 && pos.y >= 0 && pos.x < 2 * FOV+1 && pos.y < 2 * FOV + 1;
+	return pos.x >= 0 && pos.y >= 0 && pos.x < 2 * FOV + 1 && pos.y < 2 * FOV + 1;
 }
 
 bool Animal::isVacant(Park::Tile tile) const {

@@ -28,15 +28,17 @@ public:
 	Park();
 	
 	void Simulation();
-	//std::vector<std::vector<Creatures>> GetSight(Coords coords, int FOV) const;
-	//Creatures GetType(Creature*) const;
+
 	void Draw() const;
+
 	void Add(Creature*);
 	void Remove(Creature*);
+
 	Tile operator[](Coords) const;
 	bool inBound(Coords) const;
 private:
 	Field field;
+
 	void Move(Creature*, Coords old_pos);
 	void Eat(Creature*);
 	bool isEaten(Creature*);
