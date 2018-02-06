@@ -20,7 +20,6 @@ std::size_t Fox::getCount() {
 
 void Fox::behave() {
 	last_action = IDLE;
-	scan();
 
 	if (nutrients == 0 || isOld())
 		death();
@@ -44,19 +43,9 @@ void Fox::idle() {
 bool Fox::move(Aim aim) {
 	bool move = false;
 
-	std::vector<Coords::Direction>* path;
-	if (aim == FOOD)
-		path = &route_to_food;
-	else if (aim == PARTNER)
-		path = &route_to_partner;
-	else if (aim == ENEMY)
-		path = &route_to_enemy;
-	else
-		return move;
-
 	for (unsigned i = 0; i < FOX_MOVE_LENGTH; ++i) {
-		if (!path->empty()) {
-			Coords::Direction step = path->back(); path->pop_back();
+		if (!route.empty()) {
+			Coords::Direction step = route.back(); route.pop_back();
 
 			Coords next;
 			if (step == Coords::UP)
@@ -68,7 +57,7 @@ bool Fox::move(Aim aim) {
 			else if (step == Coords::RIGHT)
 				next = position.right();
 
-			if (isVacant(territory[next])) { // ?
+			if (isVacant(territory[next])) {
 				position = next;
 				move = true;
 			}
@@ -90,17 +79,19 @@ bool Fox::procreate() {
 	offsprings.clear(); // VERY IMPORTANT!!!!
 	bool procreate = false;
 
-	if (!inProximity(PARTNER)) //not near partner
-		move(PARTNER);
+	if (search(PARTNER)) {
+		if (!inProximity(PARTNER)) //not near partner
+			move(PARTNER);
 
-	if (inProximity(PARTNER)) { //reached partner on last move
-		Coords spot = findSpot(position); //relative to territory
-		if (spot.x != -1) { //!not found
-			Fox* child = new Fox(spot, territory);
-			offsprings.push_back(child);
-			nutrients -= 1;
-			procreate = true;
-			last_action = PROCREATE;
+		if (inProximity(PARTNER)) { //reached partner on last move
+			Coords spot = findSpot(position); //relative to territory
+			if (spot.x != -1) { //!not found
+				Fox* child = new Fox(spot, territory);
+				offsprings.push_back(child);
+				nutrients -= 1;
+				procreate = true;
+				last_action = PROCREATE;
+			}
 		}
 	}
 
@@ -110,14 +101,16 @@ bool Fox::procreate() {
 bool Fox::eat() {
 	bool eat = false;
 
-	if (!inProximity(FOOD))  //have not reached food
-		move(FOOD); //go to food
+	if (search(FOOD)) {
+		if (!inProximity(FOOD))  //have not reached food
+			move(FOOD); //go to food
 
-	if (inProximity(FOOD)) { //if reached food
-		position = closest_food; //attack
-		nutrients += 10;
-		eat = true;
-		last_action = EAT;
+		if (inProximity(FOOD)) { //if reached food
+			position = closest_aim; //attack
+			nutrients += 10;
+			eat = true;
+			last_action = EAT;
+		}
 	}
 
 	return eat;
@@ -162,7 +155,7 @@ bool Fox::isReady() const {
 }
 
 bool Fox::isScared() const {
-	return (closest_enemy - position).length() <= 3;
+	return false;
 }
 
 bool Fox::isOld() const {
@@ -174,8 +167,8 @@ bool Fox::isOld() const {
 bool Fox::inProximity(Aim aim) const {
 	bool in_proximity = false;
 	if (aim == FOOD)
-		in_proximity = (closest_food - position).length() <= 1;
+		in_proximity = (closest_aim - position).length() <= 1;
 	else if (aim == PARTNER)
-		in_proximity = (closest_partner - position).length() <= 1;
+		in_proximity = (closest_aim - position).length() <= 1;
 	return in_proximity;
 }

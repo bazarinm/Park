@@ -16,7 +16,7 @@ public:
 	virtual ~Animal() = default;
 
 	bool getSex() const;
-	virtual bool isReady() const = 0;
+	//virtual bool isReady() const = 0;
 
 	virtual bool isFood(Park::Tile) const = 0;
 	virtual bool isPartner(Park::Tile) const = 0;
@@ -24,26 +24,14 @@ public:
 protected:
 	bool sex;
 
-	void scan();
 	const int FOV;
-	Coords closest_food;
-	Coords closest_partner;
-	Coords closest_enemy;
-	std::vector<std::vector<int>> sight;
-	std::vector<Coords::Direction> route_to_food;
-	std::vector<Coords::Direction> route_to_partner;
-	std::vector<Coords::Direction> route_to_enemy;
-
-	//alternative
-	bool search(Aim);
-	bool trace(std::size_t proximity);
-	bool isAim(Aim, Park::Tile) const;
 	Coords closest_aim;
+	std::vector<std::vector<int>> sight;
 	std::vector<Coords::Direction> route;
 
+	bool search(Aim);
 
 	virtual bool eat() = 0;
-	//virtual bool move() = 0;
 	virtual bool move(Aim) = 0;
 
 	virtual bool isHungry() const = 0;
@@ -52,10 +40,19 @@ protected:
 
 	bool isVacant(Park::Tile tile) const override;
 	virtual bool inProximity(Aim) const = 0;
+	//void scan();
+	//Coords closest_food;
+	//Coords closest_partner;
+	//Coords closest_enemy;
+	//std::vector<Coords::Direction> route_to_food;
+	//std::vector<Coords::Direction> route_to_partner;
+	//std::vector<Coords::Direction> route_to_enemy;
+	//void trace(Aim, std::size_t proximity);
 private:
 	bool inSight(Coords) const;
+	bool isAim(Aim, Park::Tile) const;
 
-	void trace(Aim, std::size_t proximity);
+	bool trace(std::size_t proximity);
 
 	Coords toReal(Coords) const;
 	Coords toRelative(Coords) const;

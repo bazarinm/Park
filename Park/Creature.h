@@ -19,6 +19,7 @@ public:
 	Species getSpecies() const;
 	Genuses getGenus() const;
 	bool isDead() const;
+	virtual bool isReady() const = 0;
 protected:
 	const Park& territory;
 	const Genuses genus;

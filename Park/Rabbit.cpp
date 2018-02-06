@@ -21,8 +21,7 @@ std::size_t Rabbit::getCount() {
 
 void Rabbit::behave() {
 	last_action = IDLE;
-	//scan();
-	//++age;
+
 	if (nutrients == 0 || isOld())
 		death();
 	else if (isHungry()) //hungry and found food nearby
@@ -126,9 +125,7 @@ bool Rabbit::procreate() {
 	offsprings.clear(); // VERY IMPORTANT!!!!
 	bool procreate = false;
 
-	procreate = search(PARTNER);
-
-	if (procreate) {
+	if (search(PARTNER)) {
 		if (!inProximity(PARTNER))
 			move(PARTNER);
 		//else is not to be used, since periods would be out of sync otherwise
@@ -179,16 +176,19 @@ bool Rabbit::isFood(Park::Tile tile) const {
 	bool is_food = false;
 	if (tile.animal == nullptr || tile.animal == this) //either no animal or itself standing on the tile
 		is_food = tile.plant != nullptr && tile.plant->getSpecies() == GRASS;
+
 	return is_food;
 }
 
 bool Rabbit::isPartner(Park::Tile tile) const {
 	bool is_partner = false;
 	if (tile.animal != nullptr && tile.animal != this) {
-		const Animal* p = dynamic_cast<const Animal*>(tile.animal);
+		const Creature* p = tile.animal;
+		//const Animal* p = dynamic_cast<const Animal*>(tile.animal);
 			if (p->getSpecies() == species && p->isReady())
 				is_partner = true;
 	}
+
 	return is_partner;
 }
 
@@ -206,13 +206,16 @@ bool Rabbit::isReady() const {
 	bool is_ready = false;
 	if (age == RABBIT_READY_AGE)
 		is_ready = true;
-	else if(age > RABBIT_READY_AGE && age % RABBIT_PERIOD == 0)
+	else if (age > RABBIT_READY_AGE && age % RABBIT_PERIOD == 0)
 		is_ready = true;
+
 	return is_ready;
 }
 
 bool Rabbit::isScared() const {
-	return (closest_enemy - position).length() <= 3;
+	//search(ENEMY);
+	//return (closest_enemy - position).length() <= 3;
+	return false; //temporary
 }
 
 bool Rabbit::isOld() const {
@@ -225,5 +228,6 @@ bool Rabbit::inProximity(Aim aim) const {
 		in_proximity = (closest_aim - position).length() == 0;
 	else if (aim == PARTNER)
 		in_proximity = (closest_aim - position).length() <= 1;
+
 	return in_proximity;
 }

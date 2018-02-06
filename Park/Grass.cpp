@@ -72,10 +72,14 @@ void Grass::death() {
 void Grass::behave() {
 	last_action = IDLE;
 
-	if (age <= 10)
+	if (isReady())
 		procreate();
 	else
 		idle();
 
-	//++age;
+	++age;
+}
+
+bool Grass::isReady() const {
+	return age % 1 == 0;
 }

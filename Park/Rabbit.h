@@ -4,11 +4,11 @@
 #include "Animal.h"
 #include "Park.h"
 
-const unsigned RABBIT_FOV = 5;
+const unsigned RABBIT_FOV = 4;
 const unsigned RABBIT_JUMP_LENGTH = 2;
-const unsigned RABBIT_MAX_AGE = 11;
-const unsigned RABBIT_PERIOD = 2;
-const unsigned RABBIT_READY_AGE = 4;
+const unsigned RABBIT_MAX_AGE = 10;
+const unsigned RABBIT_PERIOD = 3;
+const unsigned RABBIT_READY_AGE = 3;
 const unsigned RABBIT_REACH = 1;
 
 class Rabbit :
@@ -21,6 +21,7 @@ public:
 	void behave() final;
 
 	static std::size_t getCount();
+	bool isReady() const final;
 private:
 	static std::size_t rabbit_count;
 
@@ -31,7 +32,6 @@ private:
 	bool procreate() final;
 
 	bool isHungry() const final;
-	bool isReady() const final;
 	bool isScared() const final;
 	bool isOld() const final;
 
