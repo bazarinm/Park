@@ -166,7 +166,7 @@ void Park::Draw() const {
 			else if (tile.plant != nullptr)
 				std::cout << (char)176;
 			else
-				std::cout << " ";
+				std::cout << ".";
 		}
 	}
 	std::cout << std::endl << std::endl;

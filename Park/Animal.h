@@ -24,18 +24,23 @@ public:
 protected:
 	bool sex;
 
+	void scan();
+	const int FOV;
 	Coords closest_food;
 	Coords closest_partner;
 	Coords closest_enemy;
-
-	const int FOV;
 	std::vector<std::vector<int>> sight;
-
-	void scan();
-
 	std::vector<Coords::Direction> route_to_food;
 	std::vector<Coords::Direction> route_to_partner;
 	std::vector<Coords::Direction> route_to_enemy;
+
+	//alternative
+	bool search(Aim);
+	bool trace(std::size_t proximity);
+	bool isAim(Aim, Park::Tile) const;
+	Coords closest_aim;
+	std::vector<Coords::Direction> route;
+
 
 	virtual bool eat() = 0;
 	//virtual bool move() = 0;
