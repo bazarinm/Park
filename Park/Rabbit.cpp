@@ -2,7 +2,7 @@
 #include "Park.h"
 
 Rabbit::Rabbit(Coords pos, const Park& territory) : 
-	Animal(6, pos, territory, 5, RABBIT)
+	Animal(3, pos, territory, 4, RABBIT)
 {
 	++rabbit_count;
 }
@@ -71,8 +71,6 @@ bool Rabbit::move(Aim aim) {
 
 			if (isVacant(territory[next])) {
 				position = next;
-				--nutrients;
-				last_action = MOVE;
 				move = true;
 			}
 			else
@@ -82,6 +80,10 @@ bool Rabbit::move(Aim aim) {
 			break; //no route to follow
 	}
 
+	if (move) {
+		--nutrients;
+		last_action = MOVE;
+	}
 	return move;
 }
 
@@ -89,7 +91,10 @@ bool Rabbit::procreate() {
 	offsprings.clear(); // VERY IMPORTANT!!!!
 	bool procreate = false;
 	
-	if ((closest_partner - position).length() < 2) { //near partner
+	if ((closest_partner - position).length() > 1)
+		move(PARTNER);
+
+	if ((closest_partner - position).length() <= 1) { //near partner
 		Coords spot = findSpot(position); //relative to territory
 		if (spot.x != -1) { //!not found
 			Rabbit* child = new Rabbit(spot, territory);
@@ -99,8 +104,6 @@ bool Rabbit::procreate() {
 			last_action = PROCREATE;
 		}
 	}
-	else
-		move(PARTNER); //go to partner
 
 	return procreate;
 }

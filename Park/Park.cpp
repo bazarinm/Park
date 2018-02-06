@@ -13,9 +13,13 @@ Park::Park()
 			field[i][j] = { nullptr, nullptr };
 }
 
-//Park::~Park()
-//{
-//}
+Park::~Park()
+{
+	while (!creatures.empty()) {
+		delete creatures.front();
+		creatures.pop();
+	}
+}
 
 void Park::Add(Creature* c) {
 	Coords pos = c->getPos();
@@ -94,7 +98,7 @@ void Park::Simulation() {
 	Draw();
 
 	size_t cycle_count = 0;
-	while (!creatures.empty()) {
+	while (Rabbit::getCount() != 0 && Fox::getCount() != 0 && Grass::getCount() != 0) {
 		std::size_t length = creatures.size();
 		for (std::size_t i = 0; i < length; ++i) {
 			Creature* current_creature = creatures.front(); creatures.pop();
@@ -123,11 +127,11 @@ void Park::Simulation() {
 			else 
 				creatures.push(current_creature);
 
-			//Draw();
+			Draw();
 	
 		}
 		++cycle_count;
-		Draw();
+		//Draw();
 		std::cout << cycle_count << " cycles     " << std::endl;
 	}
 }
@@ -136,7 +140,7 @@ void Park::Draw() const {
 
 	HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
 
-	CONSOLE_CURSOR_INFO     cursorInfo;
+	CONSOLE_CURSOR_INFO cursorInfo;
 
 	GetConsoleCursorInfo(out, &cursorInfo);
 	cursorInfo.bVisible = false; // set the cursor visibility
@@ -167,7 +171,6 @@ void Park::Draw() const {
 	}
 	std::cout << std::endl << std::endl;
 	std::cout << Rabbit::getCount() << " Rabbits       " << std::endl;
+	std::cout << Fox::getCount() << " Foxes       " << std::endl;
 	std::cout << Grass::getCount() << " Grass          " << std::endl;
-
-	//Sleep(100);
 }

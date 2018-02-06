@@ -11,7 +11,7 @@ public:
 	const unsigned JUMP_LENGTH = 2;
 	const unsigned MAX_AGE = 11;
 	const unsigned PERIOD = 2;
-	const unsigned READY_AGE = 3;
+	const unsigned READY_AGE = 2;
 
 	Rabbit(Coords pos, const Park& territory);
 	~Rabbit();

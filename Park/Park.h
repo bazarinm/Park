@@ -26,6 +26,7 @@ public:
 	using Field = std::array<std::array<Tile, WIDTH>, HEIGHT>;
 
 	Park();
+	~Park();
 	
 	void Simulation();
 
