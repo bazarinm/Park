@@ -4,23 +4,25 @@
 #include "Animal.h"
 #include "Park.h"
 
+const unsigned RABBIT_FOV = 5;
+const unsigned RABBIT_JUMP_LENGTH = 2;
+const unsigned RABBIT_MAX_AGE = 11;
+const unsigned RABBIT_PERIOD = 2;
+const unsigned RABBIT_READY_AGE = 3;
+const unsigned RABBIT_REACH = 1;
+
 class Rabbit :
 	public Animal
 {
 public:
-	const unsigned JUMP_LENGTH = 2;
-	const unsigned MAX_AGE = 11;
-	const unsigned PERIOD = 2;
-	const unsigned READY_AGE = 2;
-
 	Rabbit(Coords pos, const Park& territory);
 	~Rabbit();
 
 	void behave() final;
 
-	static size_t getCount();
+	static std::size_t getCount();
 private:
-	static size_t rabbit_count;
+	static std::size_t rabbit_count;
 
 	bool eat() final;
 	void idle() final;
@@ -36,6 +38,8 @@ private:
 	bool isFood(Park::Tile) const final;
 	bool isPartner(Park::Tile) const final;
 	bool isEnemy(Park::Tile) const final;
+
+	bool inProximity(Aim) const final;
 };
 
 #endif

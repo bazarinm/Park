@@ -14,9 +14,9 @@ public:
 	~Grass();
 
 	void behave() final;
-	static size_t getCount();
+	static std::size_t getCount();
 private:
-	static size_t grass_count;
+	static std::size_t grass_count;
 
 	void idle() final;
 	void death() final;

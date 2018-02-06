@@ -6,13 +6,13 @@ Fox::Fox(Coords pos, const Park& territory) :
 	++fox_count;
 }
 
-size_t Fox::fox_count = 0;
+std::size_t Fox::fox_count = 0;
 
 Fox::~Fox() {
 	death();
 }
 
-size_t Fox::getCount() {
+std::size_t Fox::getCount() {
 	return fox_count;
 }
 
@@ -54,7 +54,7 @@ bool Fox::move(Aim aim) {
 	else
 		return move;
 
-	for (unsigned i = 0; i < MOVE_LENGTH; ++i) {
+	for (unsigned i = 0; i < FOX_MOVE_LENGTH; ++i) {
 		if (!path->empty()) {
 			Coords::Direction step = path->back(); path->pop_back();
 
@@ -68,7 +68,7 @@ bool Fox::move(Aim aim) {
 			else if (step == Coords::RIGHT)
 				next = position.right();
 
-			if (isVacant(territory[next]) || (aim == FOOD && next == closest_food)) { // ?
+			if (isVacant(territory[next])) { // ?
 				position = next;
 				move = true;
 			}
@@ -90,10 +90,10 @@ bool Fox::procreate() {
 	offsprings.clear(); // VERY IMPORTANT!!!!
 	bool procreate = false;
 
-	if ((closest_partner - position).length() > 1)
+	if (!inProximity(PARTNER)) //not near partner
 		move(PARTNER);
 
-	if ((closest_partner - position).length() <= 1) { //near partner
+	if (inProximity(PARTNER)) { //reached partner on last move
 		Coords spot = findSpot(position); //relative to territory
 		if (spot.x != -1) { //!not found
 			Fox* child = new Fox(spot, territory);
@@ -110,11 +110,11 @@ bool Fox::procreate() {
 bool Fox::eat() {
 	bool eat = false;
 
-	if (!isFood(territory[position]))  //have not reached food
+	if (!inProximity(FOOD))  //have not reached food
 		move(FOOD); //go to food
 
-	if (isFood(territory[position])) { //if reached food
-		//position = closest_food;
+	if (inProximity(FOOD)) { //if reached food
+		position = closest_food; //attack
 		nutrients += 10;
 		eat = true;
 		last_action = EAT;
@@ -141,8 +141,6 @@ bool Fox::isPartner(Park::Tile tile) const {
 	bool is_partner = false;
 	if (tile.animal != nullptr) {
 		const Animal* p = dynamic_cast<const Animal*>(tile.animal);
-		//const Creature* p = tile.animal;
-		//if (p != nullptr) 
 		if (p->getSpecies() == species && p->isReady())
 			is_partner = true;
 	}
@@ -160,7 +158,7 @@ bool Fox::isHungry() const {
 }
 
 bool Fox::isReady() const {
-	return age % PERIOD == 0 && age >= READY_AGE && !isHungry();
+	return age % FOX_PERIOD == 0 && age >= FOX_READY_AGE && !isHungry();
 }
 
 bool Fox::isScared() const {
@@ -168,5 +166,16 @@ bool Fox::isScared() const {
 }
 
 bool Fox::isOld() const {
-	return age > MAX_AGE;
+	return age > FOX_MAX_AGE;
+}
+
+//---
+
+bool Fox::inProximity(Aim aim) const {
+	bool in_proximity = false;
+	if (aim == FOOD)
+		in_proximity = (closest_food - position).length() <= 1;
+	else if (aim == PARTNER)
+		in_proximity = (closest_partner - position).length() <= 1;
+	return in_proximity;
 }

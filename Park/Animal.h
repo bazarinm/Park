@@ -4,6 +4,8 @@
 #include "Creature.h"
 #include "Park.h"
 
+#include <vector>
+
 class Animal :
 	public Creature
 {
@@ -11,7 +13,7 @@ public:
 	enum Aim { FOOD, PARTNER, ENEMY };
 
 	Animal(unsigned nutr, Coords pos, const Park& territory, int FOV, Species type);
-	//virtual ~Animal() = default;
+	virtual ~Animal() = default;
 
 	bool getSex() const;
 	virtual bool isReady() const = 0;
@@ -44,10 +46,11 @@ protected:
 	virtual bool isOld() const = 0;
 
 	bool isVacant(Park::Tile tile) const override;
+	virtual bool inProximity(Aim) const = 0;
 private:
 	bool inSight(Coords) const;
 
-	void trace(Aim, size_t proximity);
+	void trace(Aim, std::size_t proximity);
 
 	Coords toReal(Coords) const;
 	Coords toRelative(Coords) const;

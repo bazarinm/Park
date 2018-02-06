@@ -8,14 +8,14 @@ Grass::Grass(Coords pos, const Park& territory):
 	++grass_count;
 }
 
-size_t Grass::grass_count = 0;
+std::size_t Grass::grass_count = 0;
 
 Grass::~Grass()
 {
 	death();
 }
 
-size_t Grass::getCount() {
+std::size_t Grass::getCount() {
 	return grass_count;
 }
 
@@ -54,6 +54,7 @@ bool Grass::procreate() {
 
 void Grass::idle() {
 	++age;
+	last_action = IDLE;
 }
 
 void Grass::photosynthesis() {
@@ -69,11 +70,12 @@ void Grass::death() {
 }
 
 void Grass::behave() {
-	
+	last_action = IDLE;
+
 	if (age <= 10)
 		procreate();
 	else
-		death();
+		idle();
 
 	//++age;
 }

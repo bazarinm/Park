@@ -2,18 +2,18 @@
 #include "Park.h"
 
 Rabbit::Rabbit(Coords pos, const Park& territory) : 
-	Animal(3, pos, territory, 4, RABBIT)
+	Animal(3, pos, territory, RABBIT_FOV, RABBIT)
 {
 	++rabbit_count;
 }
 
-size_t Rabbit::rabbit_count = 0;
+std::size_t Rabbit::rabbit_count = 0;
 
 Rabbit::~Rabbit() {
 	death();
 }
 
-size_t Rabbit::getCount() {
+std::size_t Rabbit::getCount() {
 	return rabbit_count;
 }
 
@@ -55,7 +55,7 @@ bool Rabbit::move(Aim aim) {
 	else
 		return move;
 
-	for (unsigned i = 0; i < JUMP_LENGTH; ++i) {
+	for (unsigned i = 0; i < RABBIT_JUMP_LENGTH; ++i) {
 		if (!path->empty()) {
 			Coords::Direction step = path->back(); path->pop_back();
 
@@ -91,10 +91,10 @@ bool Rabbit::procreate() {
 	offsprings.clear(); // VERY IMPORTANT!!!!
 	bool procreate = false;
 	
-	if ((closest_partner - position).length() > 1)
+	if (!inProximity(PARTNER))
 		move(PARTNER);
 
-	if ((closest_partner - position).length() <= 1) { //near partner
+	if (inProximity(PARTNER)) { //near partner
 		Coords spot = findSpot(position); //relative to territory
 		if (spot.x != -1) { //!not found
 			Rabbit* child = new Rabbit(spot, territory);
@@ -141,8 +141,6 @@ bool Rabbit::isPartner(Park::Tile tile) const {
 	bool is_partner = false;
 	if (tile.animal != nullptr) {
 		const Animal* p = dynamic_cast<const Animal*>(tile.animal);
-		//const Creature* p = tile.animal;
-		//if (p != nullptr) 
 			if (p->getSpecies() == species && p->isReady())
 				is_partner = true;
 	}
@@ -160,7 +158,7 @@ bool Rabbit::isHungry() const {
 }
 
 bool Rabbit::isReady() const {
-	return age % PERIOD == 0 && age >= READY_AGE && !isHungry();
+	return age % RABBIT_PERIOD == 0 && age >= RABBIT_READY_AGE && !isHungry();
 }
 
 bool Rabbit::isScared() const {
@@ -168,5 +166,14 @@ bool Rabbit::isScared() const {
 }
 
 bool Rabbit::isOld() const {
-	return age > MAX_AGE;
+	return age > RABBIT_MAX_AGE;
+}
+
+bool Rabbit::inProximity(Aim aim) const {
+	bool in_proximity = false;
+	if (aim == FOOD)
+		in_proximity = (closest_food - position).length() <= 0;
+	else if (aim == PARTNER)
+		in_proximity = (closest_partner - position).length() <= 1;
+	return in_proximity;
 }

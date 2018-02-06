@@ -97,8 +97,8 @@ bool Park::isEaten(Creature* c) {
 void Park::Simulation() {
 	Draw();
 
-	size_t cycle_count = 0;
-	while (Rabbit::getCount() != 0 && Fox::getCount() != 0 && Grass::getCount() != 0) {
+	std::size_t cycle_count = 0;
+	while (Rabbit::getCount() != 0 && Fox::getCount() == 0 && Grass::getCount() != 0) {
 		std::size_t length = creatures.size();
 		for (std::size_t i = 0; i < length; ++i) {
 			Creature* current_creature = creatures.front(); creatures.pop();
@@ -127,11 +127,11 @@ void Park::Simulation() {
 			else 
 				creatures.push(current_creature);
 
-			Draw();
+			//Draw();
 	
 		}
 		++cycle_count;
-		//Draw();
+		Draw();
 		std::cout << cycle_count << " cycles     " << std::endl;
 	}
 }
@@ -151,7 +151,7 @@ void Park::Draw() const {
 	COORD coord = { (SHORT)0, (SHORT)0 };
 	SetConsoleCursorPosition(hOut, coord);
 	//Sleep(200);
-	for (size_t i = 0; i < HEIGHT; ++i) {
+	for (std::size_t i = 0; i < HEIGHT; ++i) {
 		std::cout << std::endl;
 
 		for (size_t j = 0; j < WIDTH; ++j) {
@@ -166,7 +166,7 @@ void Park::Draw() const {
 			else if (tile.plant != nullptr)
 				std::cout << (char)176;
 			else
-				std::cout << ".";
+				std::cout << " ";
 		}
 	}
 	std::cout << std::endl << std::endl;
