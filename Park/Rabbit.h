@@ -7,8 +7,8 @@
 const unsigned RABBIT_FOV = 5;
 const unsigned RABBIT_JUMP_LENGTH = 2;
 const unsigned RABBIT_MAX_AGE = 11;
-const unsigned RABBIT_PERIOD = 3;
-const unsigned RABBIT_READY_AGE = 3;
+const unsigned RABBIT_PERIOD = 2;
+const unsigned RABBIT_READY_AGE = 4;
 const unsigned RABBIT_REACH = 1;
 
 class Rabbit :

@@ -131,7 +131,7 @@ bool Rabbit::procreate() {
 	if (procreate) {
 		if (!inProximity(PARTNER))
 			move(PARTNER);
-
+		//else is not to be used, since periods would be out of sync otherwise
 		if (inProximity(PARTNER)) { //near partner
 			Coords spot = findSpot(position); //relative to territory
 			if (spot.x != -1) { //!not found
@@ -153,8 +153,9 @@ bool Rabbit::eat() {
 	if (search(FOOD)) {
 		if (!inProximity(FOOD))  //have not reached food
 			move(FOOD); //go to food
-
-		else if (inProximity(FOOD)) { //if reached food
+		//else if is not recommended, rabbirs may starve
+		if (inProximity(FOOD)) { //if reached food
+			position = closest_aim;
 			nutrients += 4;
 			eat = true;
 			last_action = EAT;
@@ -202,7 +203,12 @@ bool Rabbit::isHungry() const {
 }
 
 bool Rabbit::isReady() const {
-	return age % RABBIT_PERIOD == 0 && age >= RABBIT_READY_AGE && !isHungry();
+	bool is_ready = false;
+	if (age == RABBIT_READY_AGE)
+		is_ready = true;
+	else if(age > RABBIT_READY_AGE && age % RABBIT_PERIOD == 0)
+		is_ready = true;
+	return is_ready;
 }
 
 bool Rabbit::isScared() const {
