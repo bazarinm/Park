@@ -2,15 +2,13 @@
 #define PARK_H
 
 #include "Utility.h"
+#include "Settings.h"
 #include <queue>
 #include <array>
 
 class Creature;
 class Plant;
 class Animal;
-
-const int WIDTH = 64;
-const int HEIGHT = 32;
 
 class Park
 {
@@ -44,7 +42,7 @@ private:
 	void Move(Creature*, Coords old_pos);
 	void Eat(Creature*);
 	bool isEaten(Creature*);
-	std::queue<Creature*> creatures;
+	std::queue<std::pair<Creature*, Coords>> creatures;
 	Tile& operator[](Coords);
 };
 

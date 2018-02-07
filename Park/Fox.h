@@ -6,8 +6,6 @@
 #include "Park.h"
 #include "Utility.h"
 
-
-
 class Fox :
 	public Animal
 {

@@ -18,14 +18,9 @@ Park::Park()
 	for(int i = 0; i < 10; ++i)
 		Add(generate(GRASS));
 
-	for (int i = 0; i < 40; ++i) {
+	for (int i = 0; i < 20; ++i) {
 		Add(generate(RABBIT));
 		//Add(generate(FOX));
-	}
-
-	for (int i = 0; i < 70; ++i) {
-		//Add(generate(RABBIT));
-		Add(generate(FOX));
 	}
 }
 
@@ -52,7 +47,7 @@ Creature* Park::generate(Species s) {
 Park::~Park()
 {
 	while (!creatures.empty()) {
-		delete creatures.front();
+		delete creatures.front().first;
 		creatures.pop();
 	}
 }
@@ -64,13 +59,13 @@ void Park::Add(Creature* c) {
 	if (genus == PLANT
 		&& field[pos.x][pos.y].plant == nullptr) {
 		field[pos.x][pos.y].plant = c;
-		creatures.push(c);
+		creatures.push({ c, pos });
 	}
 	else 
 	if (genus == ANIMAL
 		&& field[pos.x][pos.y].animal == nullptr) {
 		field[pos.x][pos.y].animal = c;
-		creatures.push(c);
+		creatures.push({ c, pos });
 	}
 	else 
 		delete c;
@@ -130,23 +125,34 @@ void Park::Eat(Creature* c) {
 
 bool Park::isEaten(Creature* c) {
 	Coords pos = c->getPos();
-	Species type = c->getSpecies();
+	Genuses genus = c->getGenus();
 
-	return ((type == GRASS && field[pos.x][pos.y].plant == nullptr) ||
-			(type == RABBIT && field[pos.x][pos.y].animal == nullptr) ||
-			(type == FOX && field[pos.x][pos.y].animal == nullptr));
+
+
+	bool is_eaten = false;
+	if (genus == PLANT)
+		is_eaten = field[pos.x][pos.y].plant == nullptr;
+	else if (c->getSpecies() == RABBIT)
+		is_eaten = field[pos.x][pos.y].animal != nullptr && field[pos.x][pos.y].animal->getSpecies() == FOX;
+
+	if (c->getSpecies() == FOX && is_eaten)
+		std::cout << "ERROR";
+
+	return is_eaten;
 }
 
 void Park::Simulation() {
 	Draw();
 
 	std::size_t cycle_count = 0;
-	while (Rabbit::getCount() != 0 && Fox::getCount() != 0 && Grass::getCount() != 0) {
+	while (Rabbit::getCount() != 0 || Fox::getCount() != 0) {
 		std::size_t length = creatures.size();
 		for (std::size_t i = 0; i < length; ++i) {
-			Creature* current_creature = creatures.front(); creatures.pop();
+			Creature* current_creature = creatures.front().first; 
+			Coords last_position = creatures.front().second;
+			creatures.pop();
 
-			if (isEaten(current_creature)) {
+			if (isEaten(current_creature)) { //eaten
 				Remove(current_creature);
 				continue;
 			}
@@ -168,13 +174,28 @@ void Park::Simulation() {
 			if (last_action == DEATH)
 				Remove(current_creature);
 			else 
-				creatures.push(current_creature);
+				creatures.push({ current_creature, old_pos });
 
 			//Draw();
 	
 		}
 		++cycle_count;
 		Draw();
+
+		if(Grass::getCount() == 0)
+			for (int i = 0; i < 5; ++i) {
+				Add(generate(GRASS));
+				//Add(generate(FOX));
+			}
+			for (int i = 0; i < 7; ++i) {
+				Add(generate(RABBIT));
+				//Add(generate(FOX));
+			}
+			for (int i = 0; i < 3; ++i) {
+				//Add(generate(RABBIT));
+				Add(generate(FOX));
+			}
+
 		std::cout << cycle_count << " cycles     " << std::endl;
 	}
 }

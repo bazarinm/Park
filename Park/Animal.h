@@ -31,6 +31,8 @@ public:
 
 	bool getSex() const;
 	bool isReady() const;
+	bool isFood(Park::Tile) const;
+
 protected:
 	const int FOV;
 	Coords closest_aim;
@@ -65,7 +67,6 @@ protected:
 
 	bool isVacant(Park::Tile tile) const override;
 
-	bool isFood(Park::Tile) const;
 	bool isPartner(Park::Tile) const;
 	bool isEnemy(Park::Tile) const;
 

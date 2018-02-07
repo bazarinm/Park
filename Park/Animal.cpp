@@ -39,9 +39,15 @@ void Animal::behave() {
 	if (nutrients == 0 || isOld())
 		death();
 	else if (isHungry()) //hungry and found food nearby
-		eat();
+	{
+		if (!eat())
+			idle();
+	}
 	else if (isReady()) //ready and found partner nearby
-		procreate();
+	{
+		if (!procreate())
+			idle();
+	}
 	else
 		idle();
 
@@ -65,7 +71,8 @@ bool Animal::move(Aim aim) {
 			else if (step == Coords::RIGHT)
 				next = position.right();
 
-			if (isVacant(territory[next])) {
+			if (isVacant(territory[next])
+				/*|| (diet == CARNIVORE && isFood(territory[next]))*/) {
 				position = next;
 				move = true;
 			}
@@ -119,7 +126,7 @@ bool Animal::procreate() {
 			if (territory.inBound(spot)) { //!not found
 				Animal* child = mate(spot);
 				offsprings.push_back(child);
-				nutrients -= 2;
+				nutrients -= 1;
 				procreate = true;
 				last_action = PROCREATE;
 			}
