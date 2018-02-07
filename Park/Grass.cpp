@@ -1,6 +1,6 @@
 #include "Grass.h"
 
-#include <iostream>
+#include "Settings.h"
 
 Grass::Grass(const Park& territory, Coords position): 
 	Plant(GRASS, GRASS_NUTRITION, territory, position, GRASS_START_NUTRIENTS)

@@ -15,8 +15,13 @@ public:
 	enum Aim { FOOD, PARTNER, ENEMY };
 
 	Animal(
-		Species, Diet diet, Species food, unsigned nutrition,
+		Species, 
+		Diet diet, Species food, unsigned nutrition,
 		std::size_t FOV, unsigned move_length, 
+		Species enemy,
+		unsigned min_nutrients, 
+		unsigned max_age,
+		unsigned period, unsigned ready_age, 
 		const Park& territory, Coords pos,
 		unsigned nutrients
 		);
@@ -25,10 +30,7 @@ public:
 	void behave() override;
 
 	bool getSex() const;
-
-	virtual bool isFood(Park::Tile) const;
-	virtual bool isPartner(Park::Tile) const;
-	virtual bool isEnemy(Park::Tile) const;
+	bool isReady() const;
 protected:
 	const int FOV;
 	Coords closest_aim;
@@ -37,13 +39,15 @@ protected:
 	bool search(Aim);
 
 	const unsigned short move_length;
-	virtual bool move(Aim);
+	bool move(Aim);
 
 	const Diet diet;
 	const Species food;
 	virtual bool eat();
 
 	bool sex;
+	const unsigned period;
+	const unsigned ready_age;
 	bool procreate() override;
 	virtual Animal* mate(Coords spot) = 0;
 
@@ -53,13 +57,19 @@ protected:
 	bool isHungry() const;
 	
 	//const unsigned min_enemy_distance;
-	virtual bool isScared();
+	const Species enemy;
+	bool isScared() const;
 
 	const unsigned max_age;
-	virtual bool isOld();
+	bool isOld() const;
 
 	bool isVacant(Park::Tile tile) const override;
-	virtual bool inProximity(Aim) const = 0;
+
+	bool isFood(Park::Tile) const;
+	bool isPartner(Park::Tile) const;
+	bool isEnemy(Park::Tile) const;
+
+	bool inProximity(Aim) const;
 private:
 	bool inSight(Coords) const;
 	bool isAim(Aim, Park::Tile) const;

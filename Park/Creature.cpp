@@ -2,6 +2,7 @@
 
 #include "Park.h"
 #include "Utility.h"
+#include <array>
 
 Creature::Creature(
 	Genuses _genus,

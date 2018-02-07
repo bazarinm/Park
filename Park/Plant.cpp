@@ -1,7 +1,5 @@
 #include "Plant.h"
 
-
-
 Plant::Plant(
 	Species _species,
 	unsigned _nutrition, 

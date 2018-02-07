@@ -1,4 +1,5 @@
 #include "Park.h"
+
 #include "Grass.h"
 #include "Rabbit.h"
 #include "Fox.h"
@@ -17,7 +18,7 @@ Park::Park()
 	for(int i = 0; i < 10; ++i)
 		Add(generate(GRASS));
 
-	for (int i = 0; i < 30; ++i) {
+	for (int i = 0; i < 40; ++i) {
 		Add(generate(RABBIT));
 		//Add(generate(FOX));
 	}

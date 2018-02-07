@@ -8,19 +8,26 @@
 
 Animal::Animal(
 	Species _species, 
-	Diet _diet,
-	unsigned _nutrition,
-	std::size_t _FOV, 
-	unsigned _move_length,
-	const Park& _territory, 
-	Coords _position,
+	Diet _diet, Species _food, unsigned _nutrition,
+	std::size_t _FOV, unsigned _move_length,
+	Species _enemy,
+	unsigned _min_nutrients,
+	unsigned _max_age,
+	unsigned _period, unsigned _ready_age,
+	const Park& _territory, Coords _position,
 	unsigned _nutrients 
 ):
 	Creature(ANIMAL, _species, _nutrition, _territory, _position, _nutrients),
 
 	diet(_diet),
+	food(_food),
 	FOV(_FOV),
-	move_length(_move_length)
+	move_length(_move_length),
+	enemy(_enemy),
+	min_nutrients(_min_nutrients),
+	max_age(_max_age),
+	period(_period),
+	ready_age(_ready_age)
 {
 }
 
@@ -233,6 +240,56 @@ bool Animal::trace(std::size_t proximity) {
 
 
 
+bool Animal::isFood(Park::Tile tile) const {
+	bool is_food = false;
+	//if (isVacant(tile) || tile.animal == this) //either no animal or itself standing on the tile
+		if (diet == HERBIVORE && isVacant(tile))
+			is_food = tile.plant != nullptr && tile.plant->getSpecies() == food;
+		else if (diet == CARNIVORE)
+			is_food = tile.animal != nullptr && tile.animal->getSpecies() == food;
+
+	return is_food;
+}
+
+bool Animal::isPartner(Park::Tile tile) const {
+	bool is_partner = false;
+	if (tile.animal != nullptr && tile.animal != this) 
+		if (tile.animal->getSpecies() == species && tile.animal->isReady())
+			is_partner = true;
+
+	return is_partner;
+}
+
+bool Animal::isEnemy(Park::Tile tile) const {
+	return tile.animal != nullptr && tile.animal->getSpecies() == enemy;
+}
+
+
+
+bool Animal::isHungry() const {
+	return nutrients <= min_nutrients;
+}
+
+bool Animal::isReady() const {
+	bool is_ready = false;
+	if (age == ready_age)
+		is_ready = true;
+	else if (age > ready_age && age % period == 0)
+		is_ready = true;
+
+	return is_ready;
+}
+
+bool Animal::isScared() const {
+	//search(ENEMY);
+	//return (closest_enemy - position).length() <= 3;
+	return false; //temporary
+}
+
+bool Animal::isOld() const {
+	return age > max_age;
+}
+
 bool Animal::getSex() const {
 	return sex;
 }
@@ -243,8 +300,22 @@ bool Animal::inSight(Coords pos) const {
 	return pos.x >= 0 && pos.y >= 0 && pos.x < 2 * FOV + 1 && pos.y < 2 * FOV + 1;
 }
 
+bool Animal::inProximity(Aim aim) const {
+	bool in_proximity = false;
+	if (aim == FOOD) {
+		if (diet == HERBIVORE)
+			in_proximity = (closest_aim - position).length() == 0;
+		else if (diet == CARNIVORE)
+			in_proximity = (closest_aim - position).length() <= 1;
+	}
+	else if (aim == PARTNER)
+		in_proximity = (closest_aim - position).length() <= 1;
+
+	return in_proximity;
+}
+
 bool Animal::isVacant(Park::Tile tile) const {
-	return tile.animal == nullptr;
+	return tile.animal == nullptr || tile.animal == this;
 }
 
 bool Animal::isAim(Aim aim, Park::Tile tile) const {

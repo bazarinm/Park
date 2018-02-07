@@ -2,12 +2,8 @@
 #define GRASS_H
 
 #include "Plant.h"
-#include <vector>
 
 class Park;
-
-const unsigned GRASS_NUTRITION = 4;
-const unsigned GRASS_START_NUTRIENTS = 1;
 
 class Grass :
 	public Plant
