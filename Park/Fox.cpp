@@ -1,7 +1,7 @@
 #include "Fox.h"
 
 Fox::Fox(Coords pos, const Park& territory) :
-	Animal(8, pos, territory, 7, FOX)
+	Animal(7, pos, territory, 7, FOX)
 {
 	++fox_count;
 }

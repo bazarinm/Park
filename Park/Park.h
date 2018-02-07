@@ -9,7 +9,7 @@ class Creature;
 class Plant;
 class Animal;
 
-const int WIDTH = 32;
+const int WIDTH = 64;
 const int HEIGHT = 32;
 
 class Park
@@ -34,6 +34,7 @@ public:
 
 	void Add(Creature*);
 	void Remove(Creature*);
+	Creature* generate(Species);
 
 	Tile operator[](Coords) const;
 	bool inBound(Coords) const;

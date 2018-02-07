@@ -7,7 +7,7 @@
 const unsigned RABBIT_FOV = 4;
 const unsigned RABBIT_JUMP_LENGTH = 2;
 const unsigned RABBIT_MAX_AGE = 10;
-const unsigned RABBIT_PERIOD = 3;
+const unsigned RABBIT_PERIOD = 2;
 const unsigned RABBIT_READY_AGE = 3;
 const unsigned RABBIT_REACH = 1;
 

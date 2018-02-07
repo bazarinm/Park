@@ -4,6 +4,7 @@
 #include <queue>
 #include <array>
 #include <vector>
+#include <random>
 
 enum Species { BARRIER, DIRT, GRASS, RABBIT, FOX };
 enum Genuses { PLANT, ANIMAL };
@@ -36,12 +37,12 @@ struct Coords {
 	Coords right() const { return { x, y + 1 }; }
 };
 
-template<class T>
-struct Matrix {
-	std::vector<std::vector<T>> mat;
-
-	T& operator[](Coords pos) { return mat[pos.x][pos.y]; }
-	T operator[](Coords pos) const { return mat[pos.x][pos.y]; }
-};
+//template<class T>
+//struct Matrix {
+//	std::vector<std::vector<T>> mat;
+//
+//	T& operator[](Coords pos) { return mat[pos.x][pos.y]; }
+//	T operator[](Coords pos) const { return mat[pos.x][pos.y]; }
+//};
 
 #endif 

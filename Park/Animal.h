@@ -2,8 +2,9 @@
 #define ANIMAL_H
 
 #include "Creature.h"
-#include "Park.h"
 
+#include "Park.h"
+#include "Utility.h"
 #include <vector>
 
 class Animal :

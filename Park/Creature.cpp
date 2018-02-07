@@ -1,6 +1,7 @@
 #include "Creature.h"
-#include "Park.h"
 
+#include "Park.h"
+#include "Utility.h"
 
 Creature::Creature(unsigned _nutr, Coords _pos, const Park& _territory, Genuses _genus, Species _type): 
 	nutrients(_nutr), position(_pos), territory(_territory), genus(_genus), species(_type), is_dead(false), age(0)

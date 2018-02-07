@@ -3,14 +3,49 @@
 #include "Rabbit.h"
 #include "Fox.h"
 #include <iostream>
-#include <typeinfo>
+#include <random>
 #include <Windows.h>
+
+Coords randomize(int, int);
 
 Park::Park()
 {
 	for (std::size_t i = 0; i < HEIGHT; ++i)
 		for (std::size_t j = 0; j < WIDTH; ++j)
 			field[i][j] = { nullptr, nullptr };
+
+	for(int i = 0; i < 20; ++i)
+		Add(generate(GRASS));
+
+	for (int i = 0; i < 60; ++i) {
+		Add(generate(RABBIT));
+		//Add(generate(FOX));
+	}
+
+	for (int i = 0; i < 70; ++i) {
+		//Add(generate(RABBIT));
+		Add(generate(FOX));
+	}
+}
+
+Coords randomize(int height, int width) {
+	static std::random_device sd;
+	static std::mt19937_64 gen(sd());
+	static std::uniform_int_distribution<> h(0, height - 1);
+	static std::uniform_int_distribution<> w(0, width - 1);
+
+	return { h(gen), w(gen) };
+}
+
+Creature* Park::generate(Species s) {
+	Creature* c = nullptr;
+	switch (s) {
+	case RABBIT: c = new Rabbit(randomize(HEIGHT, WIDTH), *this); break;
+	case FOX: c = new Fox(randomize(HEIGHT, WIDTH), *this); break;
+	case GRASS: c = new Grass(randomize(HEIGHT, WIDTH), *this); break;
+	}
+
+	return c;
 }
 
 Park::~Park()
@@ -25,12 +60,19 @@ void Park::Add(Creature* c) {
 	Coords pos = c->getPos();
 	Genuses genus = c->getGenus();
 
-	if (genus == PLANT)
+	if (genus == PLANT
+		&& field[pos.x][pos.y].plant == nullptr) {
 		field[pos.x][pos.y].plant = c;
-	else if (genus == ANIMAL)
+		creatures.push(c);
+	}
+	else 
+	if (genus == ANIMAL
+		&& field[pos.x][pos.y].animal == nullptr) {
 		field[pos.x][pos.y].animal = c;
-
-	creatures.push(c);
+		creatures.push(c);
+	}
+	else 
+		delete c;
 }
 
 void Park::Remove(Creature* c) {
@@ -98,7 +140,7 @@ void Park::Simulation() {
 	Draw();
 
 	std::size_t cycle_count = 0;
-	while (Rabbit::getCount() != 0 && Fox::getCount() == 0 && Grass::getCount() != 0) {
+	while (Rabbit::getCount() != 0 && Fox::getCount() != 0 && Grass::getCount() != 0) {
 		std::size_t length = creatures.size();
 		for (std::size_t i = 0; i < length; ++i) {
 			Creature* current_creature = creatures.front(); creatures.pop();

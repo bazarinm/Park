@@ -34,7 +34,6 @@ void Rabbit::behave() {
 	++age;
 }
 
-
 //bool Rabbit::move(Aim aim) {
 //	bool move = false;
 //
@@ -79,7 +78,6 @@ void Rabbit::behave() {
 //	}
 //	return move;
 //}
-
 
 void Rabbit::idle() {
 	--nutrients;

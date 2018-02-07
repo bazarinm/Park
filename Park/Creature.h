@@ -8,7 +8,7 @@
 class Creature
 {
 public:
-	Creature(unsigned nutr, Coords pos, const Park& territory, Genuses genus, Species type);
+	Creature(unsigned nutr, Coords pos, const Park&, Genuses, Species);
 	virtual ~Creature() = default;
 
 	virtual void behave() = 0;

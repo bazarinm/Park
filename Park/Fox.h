@@ -10,7 +10,7 @@ const unsigned FOX_FOV = 7;
 const unsigned FOX_MOVE_LENGTH = 3;
 const unsigned FOX_MAX_AGE = 20;
 const unsigned FOX_PERIOD = 2;
-const unsigned FOX_READY_AGE = 4;
+const unsigned FOX_READY_AGE = 3;
 const unsigned FOX_REACH = 1;
 
 class Fox :

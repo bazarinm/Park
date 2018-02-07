@@ -1,6 +1,10 @@
 #include "Animal.h"
 
+#include "Utility.h"
 #include "Park.h"
+#include <vector>
+#include <array>
+#include <queue>
 
 Animal::Animal(unsigned nutr, Coords pos, const Park& territory, int _FOV, Species type):
 	FOV(_FOV),
@@ -24,7 +28,7 @@ bool Animal::search(Aim aim) {
 	steps.push(position);
 
 	bool aim_found = false;
-	size_t aim_proximity;
+	std::size_t aim_proximity;
 
 	if (isAim(aim, territory[position])) { //checks its position first;
 		aim_proximity = 1;
@@ -77,7 +81,7 @@ bool Animal::trace(std::size_t proximity) {
 	Coords destination = closest_aim;
 
 	Coords step = toRelative(destination);
-	size_t step_n = proximity;
+	std::size_t step_n = proximity;
 
 	while (step_n != 1) {
 		std::array<Coords, 4> steps;
@@ -86,7 +90,7 @@ bool Animal::trace(std::size_t proximity) {
 		steps[Coords::LEFT] = step.left();
 		steps[Coords::RIGHT] = step.right();
 
-		unsigned dir = 0;
+		unsigned short dir = 0;
 		for (Coords next : steps) {
 			/*if (!territory.inBound(toReal(next)) || !inSight(next)) {
 				++dir;
