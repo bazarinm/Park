@@ -14,10 +14,10 @@ Park::Park()
 		for (std::size_t j = 0; j < WIDTH; ++j)
 			field[i][j] = { nullptr, nullptr };
 
-	for(int i = 0; i < 20; ++i)
+	for(int i = 0; i < 10; ++i)
 		Add(generate(GRASS));
 
-	for (int i = 0; i < 60; ++i) {
+	for (int i = 0; i < 30; ++i) {
 		Add(generate(RABBIT));
 		//Add(generate(FOX));
 	}
@@ -40,9 +40,9 @@ Coords randomize(int height, int width) {
 Creature* Park::generate(Species s) {
 	Creature* c = nullptr;
 	switch (s) {
-	case RABBIT: c = new Rabbit(randomize(HEIGHT, WIDTH), *this); break;
-	case FOX: c = new Fox(randomize(HEIGHT, WIDTH), *this); break;
-	case GRASS: c = new Grass(randomize(HEIGHT, WIDTH), *this); break;
+	case RABBIT: c = new Rabbit(*this, randomize(HEIGHT, WIDTH)); break;
+	case FOX: c = new Fox(*this, randomize(HEIGHT, WIDTH)); break;
+	case GRASS: c = new Grass(*this, randomize(HEIGHT, WIDTH)); break;
 	}
 
 	return c;

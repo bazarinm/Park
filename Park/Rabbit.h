@@ -4,6 +4,8 @@
 #include "Animal.h"
 #include "Park.h"
 
+const unsigned RABBIT_NUTRITION = 6;
+const unsigned RABBIT_START_NUTRIENTS = 5;
 const unsigned RABBIT_FOV = 4;
 const unsigned RABBIT_JUMP_LENGTH = 2;
 const unsigned RABBIT_MAX_AGE = 10;
@@ -15,21 +17,18 @@ class Rabbit :
 	public Animal
 {
 public:
-	Rabbit(Coords pos, const Park& territory);
+	Rabbit(const Park& territory, Coords);
 	~Rabbit();
 
-	void behave() final;
+	//void behave() final;
 
 	static std::size_t getCount();
 	bool isReady() const final;
 private:
 	static std::size_t rabbit_count;
 
-	bool eat() final;
-	void idle() final;
-	bool move(Aim) final;
-	void death() final;
-	bool procreate() final;
+	Rabbit* mate(Coords spot) final;
+	bool death() final;
 
 	bool isHungry() const final;
 	bool isScared() const final;

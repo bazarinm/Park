@@ -8,7 +8,8 @@
 class Creature
 {
 public:
-	Creature(unsigned nutr, Coords pos, const Park&, Genuses, Species);
+	Creature(Genuses, Species, unsigned nutrition, const Park&, Coords, unsigned nutrients);
+	Creature(Genuses, Species, unsigned nutrition, const Park&);
 	virtual ~Creature() = default;
 
 	virtual void behave() = 0;
@@ -18,6 +19,7 @@ public:
 	std::vector<Creature*> getOffsprings() const;
 	Species getSpecies() const;
 	Genuses getGenus() const;
+	unsigned getNutrition() const;
 	bool isDead() const;
 	virtual bool isReady() const = 0;
 protected:
@@ -28,6 +30,7 @@ protected:
 	Action last_action;
 	unsigned age;
 	unsigned nutrients;
+	const unsigned nutrition;
 	Coords position;
 	std::vector<Creature*> offsprings;
 	bool is_dead;
@@ -35,9 +38,9 @@ protected:
 	virtual bool isVacant(Park::Tile tile) const = 0;
 	Coords findSpot(Coords pos) const;
 
-	virtual void idle() = 0;
+	virtual bool idle() = 0;
 	virtual bool procreate() = 0;
-	virtual void death() = 0;
+	virtual bool death() = 0;
 private:
 	//
 };

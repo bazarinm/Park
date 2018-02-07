@@ -11,44 +11,55 @@ class Animal :
 	public Creature
 {
 public:
+	enum Diet { CARNIVORE, HERBIVORE };
 	enum Aim { FOOD, PARTNER, ENEMY };
 
-	Animal(unsigned nutr, Coords pos, const Park& territory, int FOV, Species type);
+	Animal(
+		Species, Diet diet, Species food, unsigned nutrition,
+		std::size_t FOV, unsigned move_length, 
+		const Park& territory, Coords pos,
+		unsigned nutrients
+		);
 	virtual ~Animal() = default;
 
+	void behave() override;
+
 	bool getSex() const;
-	//virtual bool isReady() const = 0;
 
-	virtual bool isFood(Park::Tile) const = 0;
-	virtual bool isPartner(Park::Tile) const = 0;
-	virtual bool isEnemy(Park::Tile) const = 0;
+	virtual bool isFood(Park::Tile) const;
+	virtual bool isPartner(Park::Tile) const;
+	virtual bool isEnemy(Park::Tile) const;
 protected:
-	bool sex;
-
 	const int FOV;
 	Coords closest_aim;
 	std::vector<std::vector<int>> sight;
 	std::vector<Coords::Direction> route;
-
 	bool search(Aim);
 
-	virtual bool eat() = 0;
-	virtual bool move(Aim) = 0;
+	const unsigned short move_length;
+	virtual bool move(Aim);
 
-	virtual bool isHungry() const = 0;
-	virtual bool isScared() const = 0;
-	virtual bool isOld() const = 0;
+	const Diet diet;
+	const Species food;
+	virtual bool eat();
+
+	bool sex;
+	bool procreate() override;
+	virtual Animal* mate(Coords spot) = 0;
+
+	bool idle() override;
+
+	const unsigned min_nutrients;
+	bool isHungry() const;
+	
+	//const unsigned min_enemy_distance;
+	virtual bool isScared();
+
+	const unsigned max_age;
+	virtual bool isOld();
 
 	bool isVacant(Park::Tile tile) const override;
 	virtual bool inProximity(Aim) const = 0;
-	//void scan();
-	//Coords closest_food;
-	//Coords closest_partner;
-	//Coords closest_enemy;
-	//std::vector<Coords::Direction> route_to_food;
-	//std::vector<Coords::Direction> route_to_partner;
-	//std::vector<Coords::Direction> route_to_enemy;
-	//void trace(Aim, std::size_t proximity);
 private:
 	bool inSight(Coords) const;
 	bool isAim(Aim, Park::Tile) const;

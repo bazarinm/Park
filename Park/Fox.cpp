@@ -1,7 +1,10 @@
 #include "Fox.h"
 
-Fox::Fox(Coords pos, const Park& territory) :
-	Animal(7, pos, territory, 7, FOX)
+Fox::Fox(const Park& _territory, Coords _position) :
+	Animal(
+		FOX, CARNIVORE, FOX_NUTRITION,
+		FOX_FOV, FOX_MOVE_LENGTH,
+		_territory, _position, FOX_START_NUTRIENTS)
 {
 	++fox_count;
 }
@@ -16,112 +19,21 @@ std::size_t Fox::getCount() {
 	return fox_count;
 }
 
-//---
-
-void Fox::behave() {
-	last_action = IDLE;
-
-	if (nutrients == 0 || isOld())
-		death();
-	else if (isHungry()) //hungry and found food nearby
-		eat();
-	else if (isReady()) //ready and found partner nearby
-		procreate();
-	else
-		idle();
-
-	++age;
-}
 
 //---
 
-void Fox::idle() {
-	--nutrients;
-	last_action = IDLE;
+Fox* Fox::mate(Coords spot) {
+	return new Fox(territory, spot);
 }
 
-bool Fox::move(Aim aim) {
-	bool move = false;
-
-	for (unsigned i = 0; i < FOX_MOVE_LENGTH; ++i) {
-		if (!route.empty()) {
-			Coords::Direction step = route.back(); route.pop_back();
-
-			Coords next;
-			if (step == Coords::UP)
-				next = position.up();
-			else if (step == Coords::DOWN)
-				next = position.down();
-			else if (step == Coords::LEFT)
-				next = position.left();
-			else if (step == Coords::RIGHT)
-				next = position.right();
-
-			if (isVacant(territory[next])) {
-				position = next;
-				move = true;
-			}
-			else
-				break; //an obstacle is blocking movement or position near partner has been reached
-		}
-		else
-			break; //no route to follow
-	}
-
-	if (move) {
-		--nutrients;
-		last_action = MOVE;
-	}
-	return move;
-}
-
-bool Fox::procreate() {
-	offsprings.clear(); // VERY IMPORTANT!!!!
-	bool procreate = false;
-
-	if (search(PARTNER)) {
-		if (!inProximity(PARTNER)) //not near partner
-			move(PARTNER);
-
-		if (inProximity(PARTNER)) { //reached partner on last move
-			Coords spot = findSpot(position); //relative to territory
-			if (spot.x != -1) { //!not found
-				Fox* child = new Fox(spot, territory);
-				offsprings.push_back(child);
-				nutrients -= 1;
-				procreate = true;
-				last_action = PROCREATE;
-			}
-		}
-	}
-
-	return procreate;
-}
-
-bool Fox::eat() {
-	bool eat = false;
-
-	if (search(FOOD)) {
-		if (!inProximity(FOOD))  //have not reached food
-			move(FOOD); //go to food
-
-		if (inProximity(FOOD)) { //if reached food
-			position = closest_aim; //attack
-			nutrients += 10;
-			eat = true;
-			last_action = EAT;
-		}
-	}
-
-	return eat;
-}
-
-void Fox::death() {
+bool Fox::death() {
 	if (!is_dead) {
 		is_dead = true;
 		--fox_count;
 	}
 	last_action = DEATH;
+
+	return is_dead;
 }
 
 //---

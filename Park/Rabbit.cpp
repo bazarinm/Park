@@ -1,8 +1,11 @@
 #include "Rabbit.h"
 #include "Park.h"
 
-Rabbit::Rabbit(Coords pos, const Park& territory) : 
-	Animal(3, pos, territory, RABBIT_FOV, RABBIT)
+Rabbit::Rabbit(const Park& _territory, Coords _position) :
+	Animal(
+		RABBIT, HERBIVORE, RABBIT_NUTRITION, 
+		RABBIT_FOV, RABBIT_JUMP_LENGTH,
+		_territory, _position, RABBIT_START_NUTRIENTS)
 {
 	++rabbit_count;
 }
@@ -13,162 +16,28 @@ Rabbit::~Rabbit() {
 	death();
 }
 
+
+
 std::size_t Rabbit::getCount() {
 	return rabbit_count;
 }
 
-//---
 
-void Rabbit::behave() {
-	last_action = IDLE;
 
-	if (nutrients == 0 || isOld())
-		death();
-	else if (isHungry()) //hungry and found food nearby
-		eat();
-	else if (isReady()) //ready and found partner nearby
-		procreate();
-	else
-		idle();
-
-	++age;
+Rabbit* Rabbit::mate(Coords spot) {
+	return new Rabbit(territory, spot);
 }
 
-//bool Rabbit::move(Aim aim) {
-//	bool move = false;
-//
-//	std::vector<Coords::Direction>* path;
-//	if (aim == FOOD)
-//		path = &route_to_food;
-//	else if (aim == PARTNER)
-//		path = &route_to_partner;
-//	else if (aim == ENEMY)
-//		path = &route_to_enemy;
-//	else
-//		return move;
-//
-//	for (unsigned i = 0; i < RABBIT_JUMP_LENGTH; ++i) {
-//		if (!path->empty()) {
-//			Coords::Direction step = path->back(); path->pop_back();
-//
-//			Coords next;
-//			if (step == Coords::UP)
-//				next = position.up();
-//			else if (step == Coords::DOWN)
-//				next = position.down();
-//			else if (step == Coords::LEFT)
-//				next = position.left();
-//			else if (step == Coords::RIGHT)
-//				next = position.right();
-//
-//			if (isVacant(territory[next])) {
-//				position = next;
-//				move = true;
-//			}
-//			else
-//				break; //an obstacle is blocking movement or position near partner has been reached
-//		}
-//		else
-//			break; //no route to follow
-//	}
-//
-//	if (move) {
-//		--nutrients;
-//		last_action = MOVE;
-//	}
-//	return move;
-//}
-
-void Rabbit::idle() {
-	--nutrients;
-	last_action = IDLE;
-}
-
-bool Rabbit::move(Aim aim) {
-	bool move = false;
-
-	for (unsigned i = 0; i < RABBIT_JUMP_LENGTH; ++i) {
-		if (!route.empty()) {
-			Coords::Direction step = route.back(); route.pop_back();
-
-			Coords next;
-			if (step == Coords::UP)
-				next = position.up();
-			else if (step == Coords::DOWN)
-				next = position.down();
-			else if (step == Coords::LEFT)
-				next = position.left();
-			else if (step == Coords::RIGHT)
-				next = position.right();
-
-			if (isVacant(territory[next])) {
-				position = next;
-				move = true;
-			}
-			else
-				break; //an obstacle is blocking movement or position near partner has been reached
-		}
-		else
-			break; //no route to follow
-	}
-
-	if (move) {
-		--nutrients;
-		last_action = MOVE;
-	}
-	return move;
-}
-
-bool Rabbit::procreate() {
-	offsprings.clear(); // VERY IMPORTANT!!!!
-	bool procreate = false;
-
-	if (search(PARTNER)) {
-		if (!inProximity(PARTNER))
-			move(PARTNER);
-		//else is not to be used, since periods would be out of sync otherwise
-		if (inProximity(PARTNER)) { //near partner
-			Coords spot = findSpot(position); //relative to territory
-			if (spot.x != -1) { //!not found
-				Rabbit* child = new Rabbit(spot, territory);
-				offsprings.push_back(child);
-				nutrients -= 2;
-				procreate = true;
-				last_action = PROCREATE;
-			}
-		}
-	}
-
-	return procreate;
-}
-
-bool Rabbit::eat() {
-	bool eat = false;
-
-	if (search(FOOD)) {
-		if (!inProximity(FOOD))  //have not reached food
-			move(FOOD); //go to food
-		//else if is not recommended, rabbirs may starve
-		if (inProximity(FOOD)) { //if reached food
-			position = closest_aim;
-			nutrients += 4;
-			eat = true;
-			last_action = EAT;
-		}
-	}
-
-	return eat;
-}
-
-void Rabbit::death() {
+bool Rabbit::death() {
 	if (!is_dead) { 
 		is_dead = true;
 		--rabbit_count;
 	}
 	last_action = DEATH;
+	return is_dead;
 }
 
-//---
+
 
 bool Rabbit::isFood(Park::Tile tile) const {
 	bool is_food = false;

@@ -2,8 +2,8 @@
 
 #include <iostream>
 
-Grass::Grass(Coords pos, const Park& territory): 
-	Plant(6, pos, territory, GRASS)
+Grass::Grass(const Park& territory, Coords position): 
+	Plant(GRASS, GRASS_NUTRITION, territory, position, GRASS_START_NUTRIENTS)
 {
 	++grass_count;
 }
@@ -43,7 +43,7 @@ bool Grass::procreate() {
 	
 	for (Coords spot : spots) 
 		if (spot.x != -1) { //!not_found
-			Grass* offspring = new Grass(spot, territory);
+			Grass* offspring = new Grass(territory, spot);
 			offsprings.push_back(offspring);
 			procreate = true;
 			last_action = PROCREATE;
@@ -52,21 +52,24 @@ bool Grass::procreate() {
 	return procreate;
 }
 
-void Grass::idle() {
+bool Grass::idle() {
 	++age;
 	last_action = IDLE;
+	return true;
 }
 
 void Grass::photosynthesis() {
 	++nutrients;
 }
 
-void Grass::death() {
+bool Grass::death() {
 	if (!is_dead) {
 		is_dead = true;
 		--grass_count;
 		last_action = DEATH;
 	}
+
+	return is_dead;
 }
 
 void Grass::behave() {

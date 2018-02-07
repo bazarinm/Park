@@ -6,31 +6,28 @@
 #include "Park.h"
 #include "Utility.h"
 
-const unsigned FOX_FOV = 7;
+const unsigned FOX_START_NUTRIENTS = 5;
+const unsigned FOX_NUTRITION = 1;
+const unsigned FOX_FOV = 6;
 const unsigned FOX_MOVE_LENGTH = 3;
-const unsigned FOX_MAX_AGE = 20;
-const unsigned FOX_PERIOD = 2;
-const unsigned FOX_READY_AGE = 3;
+const unsigned FOX_MAX_AGE = 15;
+const unsigned FOX_PERIOD = 3;
+const unsigned FOX_READY_AGE = 4;
 const unsigned FOX_REACH = 1;
 
 class Fox :
 	public Animal
 {
 public:
-	Fox(Coords pos, const Park& territory);
+	Fox(const Park& territory, Coords);
 	~Fox();
-
-	void behave() final;
 
 	static std::size_t getCount();
 private:
 	static std::size_t fox_count;
 
-	bool eat() final;
-	void idle() final;
-	bool move(Aim) final;
-	void death() final;
-	bool procreate() final;
+	Fox* mate(Coords spot) final;
+	bool death() final;
 
 	bool isHungry() const final;
 	bool isReady() const final;

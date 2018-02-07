@@ -3,10 +3,49 @@
 #include "Park.h"
 #include "Utility.h"
 
-Creature::Creature(unsigned _nutr, Coords _pos, const Park& _territory, Genuses _genus, Species _type): 
-	nutrients(_nutr), position(_pos), territory(_territory), genus(_genus), species(_type), is_dead(false), age(0)
+Creature::Creature(
+	Genuses _genus,
+	Species _species,
+	unsigned _nutrition,
+	const Park& _territory,
+	Coords _pos,
+	unsigned _nutrients
+) : 
+	genus(_genus),
+	species(_species),
+	nutrition(_nutrition),
+
+	territory(_territory),
+	position(_pos),
+
+	nutrients(_nutrients),
+	is_dead(false), 
+	age(0)
 {
 	last_action = IDLE;
+}
+
+Creature::Creature(
+	Genuses _genus,
+	Species _species,
+	unsigned _nutrition,
+	const Park& _territory
+) :
+	genus(_genus),
+	species(_species),
+	nutrition(_nutrition),
+
+	territory(_territory),
+
+	is_dead(false)
+{
+	last_action = IDLE;
+}
+
+
+
+unsigned Creature::getNutrition() const {
+	return nutrition;
 }
 
 Action Creature::getAction() const {

@@ -2,8 +2,14 @@
 
 
 
-Plant::Plant(unsigned nutr, Coords pos, const Park& territory, Species type): 
-	Creature(nutr, pos, territory, PLANT, type)
+Plant::Plant(
+	Species _species,
+	unsigned _nutrition, 
+	const Park& _territory, 
+	Coords _position,
+	unsigned _nutrients
+) :
+	Creature(PLANT, _species, _nutrition, _territory, _position, _nutrients)
 {
 }
 

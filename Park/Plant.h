@@ -8,7 +8,7 @@ class Plant :
 	public Creature
 {
 public:
-	Plant(unsigned nutr, Coords pos, const Park& _territory, Species type);
+	Plant(Species species, unsigned nutrition, const Park& _territory, Coords pos, unsigned nutrients);
 	virtual ~Plant() = default;
 
 protected:
